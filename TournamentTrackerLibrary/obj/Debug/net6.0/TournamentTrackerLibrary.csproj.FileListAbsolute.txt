@@ -1,0 +1,12 @@
+A:\My-Projects\TournamentTracker\TournamentTracker\TournamentTrackerLibrary\bin\Debug\net6.0\TournamentTrackerLibrary.deps.json
+A:\My-Projects\TournamentTracker\TournamentTracker\TournamentTrackerLibrary\bin\Debug\net6.0\TournamentTrackerLibrary.dll
+A:\My-Projects\TournamentTracker\TournamentTracker\TournamentTrackerLibrary\bin\Debug\net6.0\TournamentTrackerLibrary.pdb
+A:\My-Projects\TournamentTracker\TournamentTracker\TournamentTrackerLibrary\obj\Debug\net6.0\TournamentTrackerLibrary.csproj.AssemblyReference.cache
+A:\My-Projects\TournamentTracker\TournamentTracker\TournamentTrackerLibrary\obj\Debug\net6.0\TournamentTrackerLibrary.GeneratedMSBuildEditorConfig.editorconfig
+A:\My-Projects\TournamentTracker\TournamentTracker\TournamentTrackerLibrary\obj\Debug\net6.0\TournamentTrackerLibrary.AssemblyInfoInputs.cache
+A:\My-Projects\TournamentTracker\TournamentTracker\TournamentTrackerLibrary\obj\Debug\net6.0\TournamentTrackerLibrary.AssemblyInfo.cs
+A:\My-Projects\TournamentTracker\TournamentTracker\TournamentTrackerLibrary\obj\Debug\net6.0\TournamentTrackerLibrary.csproj.CoreCompileInputs.cache
+A:\My-Projects\TournamentTracker\TournamentTracker\TournamentTrackerLibrary\obj\Debug\net6.0\TournamentTrackerLibrary.dll
+A:\My-Projects\TournamentTracker\TournamentTracker\TournamentTrackerLibrary\obj\Debug\net6.0\refint\TournamentTrackerLibrary.dll
+A:\My-Projects\TournamentTracker\TournamentTracker\TournamentTrackerLibrary\obj\Debug\net6.0\TournamentTrackerLibrary.pdb
+A:\My-Projects\TournamentTracker\TournamentTracker\TournamentTrackerLibrary\obj\Debug\net6.0\ref\TournamentTrackerLibrary.dll
