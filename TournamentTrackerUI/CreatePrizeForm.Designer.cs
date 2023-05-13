@@ -100,6 +100,7 @@
             prizeAmountTextBox.Name = "prizeAmountTextBox";
             prizeAmountTextBox.Size = new Size(217, 35);
             prizeAmountTextBox.TabIndex = 29;
+            prizeAmountTextBox.Text = "0";
             // 
             // prizeAmountLabel
             // 
@@ -120,6 +121,7 @@
             prizePercentageTextBox.Name = "prizePercentageTextBox";
             prizePercentageTextBox.Size = new Size(217, 35);
             prizePercentageTextBox.TabIndex = 31;
+            prizePercentageTextBox.Text = "0";
             // 
             // prizePercentageLabel
             // 
