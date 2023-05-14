@@ -1,5 +1,4 @@
 ﻿using TournamentTrackerLibrary;
-using TournamentTrackerLibrary.DataAccess;
 using TournamentTrackerLibrary.Models;
 
 namespace TournamentTrackerUI
@@ -28,7 +27,7 @@ namespace TournamentTrackerUI
                 prizePercentageTextBox.Text
                 );
 
-            
+
             GlobalConfig.Connection.CreatePrize(prizeModel);
 
             // reshow default 
@@ -90,12 +89,12 @@ namespace TournamentTrackerUI
             }
 
             if ((prizePercentageValue > 0 && prizeAmountValue > 0) || (prizeAmountValue == 0 && prizePercentageValue == 0))
-            { 
+            {
                 // please specify either an amount or a percentage
                 output = false;
             }
 
-            // TODO - (OPTIONAL) further validations are possible here
+            // TODO - (OPTIONAL) Further validations are possible here
             // like: check for exceeding the total income of the tournament
 
             return output;

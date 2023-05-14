@@ -1,5 +1,4 @@
 ﻿using System.Configuration;
-using System.Runtime.CompilerServices;
 using TournamentTrackerLibrary.DataAccess;
 
 namespace TournamentTrackerLibrary

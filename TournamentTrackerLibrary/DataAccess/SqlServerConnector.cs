@@ -8,8 +8,6 @@ namespace TournamentTrackerLibrary.DataAccess
     {
         public PrizeModel CreatePrize(PrizeModel model)
         {
-            // TODO - Implement the actual sql server storage logic
-
             using (IDbConnection dbConnection = new System.Data.SqlClient.SqlConnection(GlobalConfig.GetConnectionString("Tournaments")))
             {
                 var parameters = new DynamicParameters();
@@ -18,7 +16,7 @@ namespace TournamentTrackerLibrary.DataAccess
                 parameters.Add("@place_name", model.PlaceName);
                 parameters.Add("@prize_amount", model.PrizeAmount);
                 parameters.Add("@prize_percentage", model.PrizePercentage);
-                
+
                 // send @prize_id as a parameter to be filled by sql server; more specifically by the stored procedure
                 parameters.Add("@prize_id", null, dbType: DbType.Int32, direction: ParameterDirection.Output);
 
