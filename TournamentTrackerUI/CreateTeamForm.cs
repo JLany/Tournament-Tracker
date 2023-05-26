@@ -5,8 +5,8 @@ namespace TournamentTrackerUI
 {
     public partial class CreateTeamForm : Form
     {
-        private List<PersonModel> availableMembers = GlobalConfig.Connector.GetPerson_All();
-        private List<PersonModel> selectedMembers = new();
+        private readonly List<PersonModel> availableMembers = GlobalConfig.Connector.GetPerson_All();
+        private readonly List<PersonModel> selectedMembers = new();
 
         public CreateTeamForm()
         {
@@ -18,6 +18,7 @@ namespace TournamentTrackerUI
             // event handlers
             addMemberButton.Click += AddMemberButton_Click;
             createMemberButton.Click += CreateMemberButton_Click;
+            createTeamButton.Click += CreateTeamButton_Click;
             removeSelectedMemberButton.Click += RemoveSelectedMemberButton_Click;
         }
 
@@ -60,6 +61,24 @@ namespace TournamentTrackerUI
             ResetMemberForm();
         }
 
+        private void CreateTeamButton_Click(object? sender, EventArgs e)
+        {
+            if (!ValidateTeamData())
+            {
+                return;
+            }
+
+            var team = new TeamModel
+            {
+                TeamMembers = selectedMembers,
+                TeamName = teamNameTextBox.Text,
+            };
+
+            GlobalConfig.Connector.CreateTeam(team);
+
+            this.Close();
+        }
+
         private void RemoveSelectedMemberButton_Click(object? sender, EventArgs e)
         {
             var selectedMember = (PersonModel)teamMembersListBox.SelectedItem;
@@ -96,6 +115,15 @@ namespace TournamentTrackerUI
             if (emailTextBox.Text.Length < 1) { return false; }
 
             if (phoneNumberTextBox.Text.Length < 1) { return false; }
+
+            return true;
+        }
+
+        private bool ValidateTeamData()
+        {
+            // TODO - Implement actual validation
+
+            if (teamNameTextBox.Text.Length < 1) { return false; }
 
             return true;
         }

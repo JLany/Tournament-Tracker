@@ -1,56 +1,77 @@
 ﻿using Dapper;
 using System.Data;
 using System.Reflection;
+using TournamentTrackerLibrary.DataAccess.SqlConnectorHelper;
 using TournamentTrackerLibrary.Models;
 
 namespace TournamentTrackerLibrary.DataAccess
 {
     public class SqlServerConnector : IDataConnector
     {
-        public PersonModel CreatePerson(PersonModel model)
+        public PersonModel CreatePerson(PersonModel person)
         {
             using (IDbConnection connection = 
                 new System.Data.SqlClient.SqlConnection(GlobalConfig.GetConnectionString("Tournaments")))
             {
                 var param = new DynamicParameters();
-
-                param.Add("@FirstName", model.FirstName);
-                param.Add("@LastName", model.LastName);
-                param.Add("@EmailAddress", model.EmailAddress);
-                param.Add("@PhoneNumber", model.PhoneNumber);
-                param.Add("@Id", model.Id, dbType: DbType.Int32, direction: ParameterDirection.Output);
+                param.Add("@FirstName", person.FirstName);
+                param.Add("@LastName", person.LastName);
+                param.Add("@EmailAddress", person.EmailAddress);
+                param.Add("@PhoneNumber", person.PhoneNumber);
+                param.Add("@Id", person.Id, dbType: DbType.Int32, direction: ParameterDirection.Output);
 
                 connection.Execute("dbo.spPerson_Insert", param, commandType: CommandType.StoredProcedure);
 
-                model.Id = param.Get<int>("@Id");
+                person.Id = param.Get<int>("@Id");
             }
 
-            return model;
+            return person;
         }
 
-        public PrizeModel CreatePrize(PrizeModel model)
+        public PrizeModel CreatePrize(PrizeModel prize)
         {
             using (IDbConnection connection = 
                 new System.Data.SqlClient.SqlConnection(GlobalConfig.GetConnectionString("Tournaments")))
             {
                 var param = new DynamicParameters();
-
-                param.Add("@PlaceNumber", model.PlaceNumber);
-                param.Add("@PlaceName", model.PlaceName);
-                param.Add("@PrizeAmount", model.PrizeAmount);
-                param.Add("@PrizePercentage", model.PrizePercentage);
+                param.Add("@PlaceNumber", prize.PlaceNumber);
+                param.Add("@PlaceName", prize.PlaceName);
+                param.Add("@PrizeAmount", prize.PrizeAmount);
+                param.Add("@PrizePercentage", prize.PrizePercentage);
 
                 // send @Id as a parameter to be filled by sql server; more specifically by the stored procedure
-                param.Add("@I", null, dbType: DbType.Int32, direction: ParameterDirection.Output);
+                param.Add("@Id", null, dbType: DbType.Int32, direction: ParameterDirection.Output);
 
                 // through the execution of the stored procedure, it will fill @Id
-                connection.Execute("dbo.sp_prize_insert", param, commandType: CommandType.StoredProcedure);
+                connection.Execute("dbo.spPrize_Insert", param, commandType: CommandType.StoredProcedure);
 
                 // we then bind it (after being filled) with the actual model
-                model.Id = param.Get<int>("@Id");
+                prize.Id = param.Get<int>("@Id");
             }
 
-            return model;
+            return prize;
+        }
+
+        public TeamModel CreateTeam(TeamModel team)
+        {
+            using (IDbConnection connection =
+                new System.Data.SqlClient.SqlConnection(GlobalConfig.GetConnectionString("Tournaments")))
+            {
+                var param = new DynamicParameters();
+                param.Add("@TeamName", team.TeamName);
+                param.Add("@Id", null, dbType: DbType.Int32, direction: ParameterDirection.Output);
+
+                connection.Execute("dbo.spTeam_Insert", param, commandType: CommandType.StoredProcedure);
+
+                team.Id = param.Get<int>("@Id");
+
+                foreach (PersonModel p in team.TeamMembers)
+                {
+                    connection.CreateTeamMember(team, p);
+                }
+            }
+
+            return team;
         }
 
         public List<PersonModel> GetPerson_All()

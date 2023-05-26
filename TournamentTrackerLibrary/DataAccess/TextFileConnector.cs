@@ -60,6 +60,11 @@ namespace TournamentTrackerLibrary.DataAccess
             return model;
         }
 
+        public TeamModel CreateTeam(TeamModel model)
+        {
+            throw new NotImplementedException();
+        }
+
         public List<PersonModel> GetPerson_All()
         {
             return PersonsFile.FullFilePath().LoadFile().ConvertToPersonModels();
