@@ -5,7 +5,7 @@ namespace TournamentTrackerLibrary
 {
     public static class GlobalConfig
     {
-        public static IDataConnection Connection { get; private set; }
+        public static IDataConnector Connector { get; private set; }
 
         public static bool InitializeConnection(DataConnectionType dataConnction)
         {
@@ -13,11 +13,11 @@ namespace TournamentTrackerLibrary
             {
                 case DataConnectionType.SqlServer:
                     var sqlServerCnn = new SqlServerConnector();
-                    Connection = sqlServerCnn;
+                    Connector = sqlServerCnn;
                     break;
                 case DataConnectionType.TextFile:
                     var textFileCnn = new TextFileConnector();
-                    Connection = textFileCnn;
+                    Connector = textFileCnn;
                     break;
                 default:
                     return false;

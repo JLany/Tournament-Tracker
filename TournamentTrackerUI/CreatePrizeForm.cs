@@ -9,6 +9,7 @@ namespace TournamentTrackerUI
         {
             InitializeComponent();
 
+            // event handlers
             this.createPrizeButton.Click += CreatePrizeButton_Click;
         }
 
@@ -28,7 +29,7 @@ namespace TournamentTrackerUI
                 );
 
 
-            GlobalConfig.Connection.CreatePrize(prizeModel);
+            GlobalConfig.Connector.CreatePrize(prizeModel);
 
             // reshow default 
             ResetForm();

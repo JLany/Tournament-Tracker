@@ -2,8 +2,10 @@
 
 namespace TournamentTrackerLibrary.DataAccess
 {
-    public interface IDataConnection
+    public interface IDataConnector
     {
+        PersonModel CreatePerson(PersonModel model);
         PrizeModel CreatePrize(PrizeModel model);
+        List<PersonModel> GetPerson_All();
     }
 }
