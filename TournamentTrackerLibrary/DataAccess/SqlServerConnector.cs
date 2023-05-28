@@ -1,7 +1,7 @@
 ﻿using Dapper;
 using System.Data;
 using System.Reflection;
-using TournamentTrackerLibrary.DataAccess.SqlConnectorHelper;
+using TournamentTrackerLibrary.DataAccess.SqlServerConnectorHelper;
 using TournamentTrackerLibrary.Models;
 
 namespace TournamentTrackerLibrary.DataAccess
@@ -67,7 +67,11 @@ namespace TournamentTrackerLibrary.DataAccess
 
                 foreach (PersonModel p in team.TeamMembers)
                 {
-                    connection.CreateTeamMember(team, p);
+                    param = new DynamicParameters();
+                    param.Add("@TeamId", team.Id);
+                    param.Add("@PersonId", p.Id);
+
+                    connection.Execute("dbo.spTeamMember_Insert", param, commandType: CommandType.StoredProcedure);
                 }
             }
 

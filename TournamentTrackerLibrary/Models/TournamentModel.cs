@@ -1,6 +1,6 @@
 ﻿namespace TournamentTrackerLibrary.Models
 {
-    public class TournamentModel
+    public class TournamentModel : IDataModel
     {
         public int Id { get; set; }
         public string TournamentName { get; set; }

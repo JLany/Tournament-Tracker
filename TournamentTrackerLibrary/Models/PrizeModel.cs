@@ -1,6 +1,6 @@
 ﻿namespace TournamentTrackerLibrary.Models
 {
-    public class PrizeModel
+    public class PrizeModel : IDataModel
     {
         public int Id { get; set; }
         public int PlaceNumber { get; set; }

@@ -106,6 +106,7 @@ namespace TournamentTrackerUI
         private bool ValidateMemberForm()
         {
             // TODO - Enhance member form validation
+            // Add validation for length to avoid violating database constraints
 
             // Do not use if statements on the same line in other cases, to facilitate debugging
             if (firstNameTextBox.Text.Length < 1) { return false; }
@@ -124,6 +125,8 @@ namespace TournamentTrackerUI
             // TODO - Implement actual validation
 
             if (teamNameTextBox.Text.Length < 1) { return false; }
+
+            if (selectedMembers.Count < 1) { return false; }
 
             return true;
         }

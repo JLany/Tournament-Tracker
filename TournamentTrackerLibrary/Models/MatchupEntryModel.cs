@@ -1,6 +1,6 @@
 ﻿namespace TournamentTrackerLibrary.Models
 {
-    public class MatchupEntryModel
+    public class MatchupEntryModel : IDataModel
     {
         /// <summary>
         /// Team particepating in the matchup

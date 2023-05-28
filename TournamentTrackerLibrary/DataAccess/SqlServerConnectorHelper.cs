@@ -7,12 +7,12 @@ using System.Text;
 using System.Threading.Tasks;
 using TournamentTrackerLibrary.Models;
 
-namespace TournamentTrackerLibrary.DataAccess.SqlConnectorHelper
+namespace TournamentTrackerLibrary.DataAccess.SqlServerConnectorHelper
 {
-    public static class DbConnectionHelper
+    public static class SqlServerConnectorHelper
     {
-        public static void CreateTeamMember(this IDbConnection connection
-            , TeamModel team, PersonModel person)
+        public static void CreateTeamMember(this SqlServerConnector connector
+            , TeamModel team, PersonModel person, IDbConnection connection)
         {
             var param = new DynamicParameters();
             param.Add("@TeamId", team.Id);
