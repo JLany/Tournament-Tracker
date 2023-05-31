@@ -1,112 +1,118 @@
 ﻿using TournamentTrackerLibrary;
 using TournamentTrackerLibrary.Models;
+using TournamentTrackerUI.LocalCommunication;
 
-namespace TournamentTrackerUI
+namespace TournamentTrackerUI;
+
+public partial class CreatePrizeForm : Form
 {
-    public partial class CreatePrizeForm : Form
+    private readonly IPrizeRequester clientProcess;
+
+    public CreatePrizeForm(IPrizeRequester clientProcess)
     {
-        public CreatePrizeForm()
-        {
-            InitializeComponent();
+        InitializeComponent();
 
-            // event handlers
-            this.createPrizeButton.Click += CreatePrizeButton_Click;
+        // Set up
+        this.clientProcess = clientProcess;
+
+        // Event handlers
+        this.createPrizeButton.Click += CreatePrizeButton_Click;
+    }
+
+    private void CreatePrizeButton_Click(object? sender, EventArgs e)
+    {
+        if (!ValidateForm())
+        {
+            MessageBox.Show("Form has invalid fields. Try again.");
+            return;
         }
 
-        private void CreatePrizeButton_Click(object? sender, EventArgs e)
+        var prize = new PrizeModel(
+            placeNumberTextBox.Text,
+            placeNameTextBox.Text,
+            prizeAmountTextBox.Text,
+            prizePercentageTextBox.Text
+        );
+
+        GlobalConfig.Connector.CreatePrize(prize);
+
+        clientProcess.ReceivePrize(prize);
+
+        // reshow default 
+        ResetForm();
+    }
+
+
+    // TODO - Show appropriate error messages (e.g. on labels)
+    private bool ValidateForm()
+    {
+        bool output = true;
+
+        // check place number field
+        if (int.TryParse(placeNumberTextBox.Text, out int placeNumberValue))
         {
-            if (!ValidateForm())
+            if (placeNumberValue < 1)
             {
-                MessageBox.Show("Form has invalid fields. Try again.");
-                return;
+                output = false;
             }
-
-            PrizeModel prizeModel = new PrizeModel(
-                placeNumberTextBox.Text,
-                placeNameTextBox.Text,
-                prizeAmountTextBox.Text,
-                prizePercentageTextBox.Text
-                );
-
-
-            GlobalConfig.Connector.CreatePrize(prizeModel);
-
-            // reshow default 
-            ResetForm();
+        }
+        else
+        {
+            output = false;
         }
 
-
-        // TODO - Show appropriate error messages (e.g. on labels)
-        private bool ValidateForm()
+        // check place name field
+        if (placeNameTextBox.Text.Length == 0)
         {
-            bool output = true;
-
-            // check place number field
-            if (int.TryParse(placeNumberTextBox.Text, out int placeNumberValue))
-            {
-                if (placeNumberValue < 1)
-                {
-                    output = false;
-                }
-            }
-            else
-            {
-                output = false;
-            }
-
-            // check place name field
-            if (placeNameTextBox.Text.Length == 0)
-            {
-                output = false;
-            }
-            else if (placeNameTextBox.Text.Length > 100) // too long
-            {
-                output = false;
-            }
-
-            // check prize amount & prize percentage
-            if (decimal.TryParse(prizeAmountTextBox.Text, out decimal prizeAmountValue))
-            {
-                if (prizeAmountValue < 0) // negative prize amount 
-                {
-                    output = false;
-                }
-            }
-            else
-            {
-                output = false;
-            }
-
-            if (int.TryParse(prizePercentageTextBox.Text, out int prizePercentageValue))
-            {
-                if (prizePercentageValue < 0 || prizePercentageValue > 100)
-                {
-                    output = false;
-                }
-            }
-            else
-            {
-                output = false;
-            }
-
-            if ((prizePercentageValue > 0 && prizeAmountValue > 0) || (prizeAmountValue == 0 && prizePercentageValue == 0))
-            {
-                // please specify either an amount or a percentage
-                output = false;
-            }
-
-            // TODO - (OPTIONAL) Further validations are possible here
-            // like: check for exceeding the total income of the tournament
-
-            return output;
+            output = false;
+        }
+        else if (placeNameTextBox.Text.Length > 100) // too long
+        {
+            output = false;
         }
 
-        private void ResetForm()
+        // check prize amount & prize percentage
+        if (decimal.TryParse(prizeAmountTextBox.Text, out decimal prizeAmountValue))
         {
-            placeNumberTextBox.Text = "";
-            placeNameTextBox.Text = "";
-            prizeAmountTextBox.Text = "0";
-            prizePercentageTextBox.Text = "0";
+            if (prizeAmountValue < 0) // negative prize amount 
+            {
+                output = false;
+            }
         }
+        else
+        {
+            output = false;
+        }
+
+        if (int.TryParse(prizePercentageTextBox.Text, out int prizePercentageValue))
+        {
+            if (prizePercentageValue < 0 || prizePercentageValue > 100)
+            {
+                output = false;
+            }
+        }
+        else
+        {
+            output = false;
+        }
+
+        if ((prizePercentageValue > 0 && prizeAmountValue > 0) || (prizeAmountValue == 0 && prizePercentageValue == 0))
+        {
+            // please specify either an amount or a percentage
+            output = false;
+        }
+
+        // TODO - (OPTIONAL) Further validations are possible here
+        // like: check for exceeding the total income of the tournament
+
+        return output;
+    }
+
+    private void ResetForm()
+    {
+        placeNumberTextBox.Text = "";
+        placeNameTextBox.Text = "";
+        prizeAmountTextBox.Text = "0";
+        prizePercentageTextBox.Text = "0";
     }
 }

@@ -108,9 +108,55 @@ namespace TournamentTrackerLibrary.DataAccess.TextFileHelpers
                     PersonModel member = persons.Where(p => p.Id == int.Parse(memberId)).First();
                     team.TeamMembers.Add(member);
                 }
+
+                teams.Add(team);
             }
 
             return teams;
+        }
+
+        public static List<TournamentModel> ConvertToTournamentModels(
+            this List<string> lines,
+            string teamsFileName,
+            string personsFileName,
+            string prizesFileName)
+        {
+            // {id,name,entryFee,active,list of teams' ids,list of prizes' ids,list of rounds' ids}
+            // {15,CHAMPS,120,1,5|65|41|17|6,7|3|55|23,6^3^12|8^2|8^1
+
+            var tournaments = new List<TournamentModel>();
+            var allTeams = teamsFileName.FullFilePath().LoadFile().ConvertToTeamModels(personsFileName);
+            var allPrizes = prizesFileName.FullFilePath().LoadFile().ConvertToPrizeModels();
+
+            foreach (var line in lines)
+            {
+                string[] cols = line.Split(',');
+
+                var tournament = new TournamentModel
+                {
+                    Id = int.Parse(cols[0]),
+                    TournamentName = cols[1],
+                    EntryFee = decimal.Parse(cols[2]),
+                };
+
+                string[] enteredTeamsIds = cols[4].Split('|');
+                foreach (string id in  enteredTeamsIds)
+                {
+                    tournament.EnteredTeams.Add(allTeams.Where(t => t.Id == int.Parse(id)).First());
+                }
+                
+                string[] tournamentPrizesIds = cols[5].Split('|');
+                foreach (string id in  tournamentPrizesIds)
+                {
+                    tournament.Prizes.Add(allPrizes.Where(t => t.Id == int.Parse(id)).First());
+                }
+
+                // TODO - Load rounds into the tournament
+
+                tournaments.Add(tournament);
+            }
+
+            return tournaments;
         }
 
         public static void SaveToModelFile<T>(this List<T> models, string fileName) where T : class
@@ -142,16 +188,47 @@ namespace TournamentTrackerLibrary.DataAccess.TextFileHelpers
 
             foreach (TeamModel t in teams)
             {
-                string line = $"{t.Id},{t.TeamName},{t.TeamMembers.ConvertIdsToString()}";
+                string line = $"{t.Id},{t.TeamName},{t.TeamMembers.ConvertIdsToString('|')}";
                 lines.Add(line);
             }
 
             File.WriteAllLines(fileName.FullFilePath(), lines);
         }
 
-        private static string ConvertIdsToString<T>(this List<T> models) where T : class, IDataModel
+        public static void SaveToTournamentModelFile(this List<TournamentModel> tournaments
+            , string fileName)
+        {
+            // {id,name,entryFee,active,list of teams' ids,list of prizes' ids,list of rounds' ids}
+            // {15,CHAMPS,120,1,5|65|41|17|6,7|3|55|23,6^3^12|8^2|8^1
+
+            var lines = new List<string>();
+
+            foreach (TournamentModel t in tournaments)
+            {
+                string line = $@"{t.Id},{t.TournamentName},{t.EntryFee}
+                                 ,{t.EnteredTeams.ConvertIdsToString('|')}
+                                 ,{t.Prizes.ConvertIdsToString('|')}
+                                 ,{t.Rounds.ConvertIdsToString('|')}";
+                lines.Add(line);
+            }
+
+            File.WriteAllLines(fileName.FullFilePath(), lines);
+        }
+
+        /// <summary>
+        /// Convert a list of data models to a string representation of their Ids.
+        /// When provided with unexpected input list, wrong output is produced.
+        /// <br></br>
+        /// Maximum nesting level = 2
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="models"></param>
+        /// <param name="delim"></param>
+        /// <returns></returns>
+        private static string ConvertIdsToString<T>(this List<T> models, char delim) where T : class
         {
             string output = "";
+            var idProp = typeof(T).GetProperties().First();
 
             if (models.Count == 0)
             {
@@ -160,7 +237,14 @@ namespace TournamentTrackerLibrary.DataAccess.TextFileHelpers
 
             foreach (var model in models)
             {
-                output += $"{model.Id}|";
+                if (model is List<T>)
+                {
+                    output += (model as List<T>)?.ConvertIdsToString('^');
+                }
+                else
+                {
+                    output += $"{idProp.GetValue(model)}{delim}";
+                }
             }
 
             output = output.Remove(output.Length - 1);

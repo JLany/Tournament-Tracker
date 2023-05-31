@@ -16,7 +16,7 @@ namespace TournamentTrackerUI
 
             TournamentTrackerLibrary.GlobalConfig.InitializeConnection(DataConnectionType.TextFile);
 
-            Application.Run(new CreateTeamForm());
+            Application.Run(new CreateTournamentForm());
             // Application.Run(new TournamentDashboardForm());
         }
     }

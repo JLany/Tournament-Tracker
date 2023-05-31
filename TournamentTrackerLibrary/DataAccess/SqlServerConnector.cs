@@ -78,6 +78,27 @@ namespace TournamentTrackerLibrary.DataAccess
             return team;
         }
 
+        public TournamentModel CreateTournament(TournamentModel tournament)
+        {
+            using (IDbConnection connection =
+                new System.Data.SqlClient.SqlConnection(GlobalConfig.GetConnectionString("Tournaments")))
+            {
+                var param = new DynamicParameters();
+                param.Add("@TournamentName", tournament.TournamentName);
+                param.Add("@EntryFee", tournament.EntryFee);
+                param.Add("@Id", null, dbType: DbType.Int32, direction: ParameterDirection.Output);
+
+                connection.Execute("dbo.spTournament_Insert", param, commandType: CommandType.StoredProcedure);
+
+                tournament.Id = param.Get<int>("@Id");
+
+                connection.SaveTournamentEntries(tournament);
+                connection.SaveTournamentPrizes(tournament);
+            }
+
+            return tournament;
+        }
+
         public List<PersonModel> GetPerson_All()
         {
             var output = new List<PersonModel>();
@@ -90,6 +111,34 @@ namespace TournamentTrackerLibrary.DataAccess
             }
 
             return output;
+        }
+
+        public List<TeamModel> GetTeam_All()
+        {
+            var output = new List<TeamModel>();
+
+            using (IDbConnection connection =
+                new System.Data.SqlClient.SqlConnection(GlobalConfig.GetConnectionString("Tournaments")))
+            {
+                output = connection.Query<TeamModel>("dbo.spTeam_GetAll"
+                    , commandType: CommandType.StoredProcedure).ToList();
+
+                foreach (var team in output)
+                {
+                    var param = new DynamicParameters();
+                    param.Add("@TeamId", team.Id);
+
+                    team.TeamMembers = connection.Query<PersonModel>("dbo.spTeamMember_GetByTeam"
+                        , param, commandType: CommandType.StoredProcedure).ToList();
+                }
+            }
+
+            return output;
+        }
+
+        public List<TournamentModel> GetTournament_All()
+        {
+            throw new NotImplementedException();
         }
     }
 }

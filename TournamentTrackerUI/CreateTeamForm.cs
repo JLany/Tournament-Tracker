@@ -1,5 +1,6 @@
 ﻿using TournamentTrackerLibrary;
 using TournamentTrackerLibrary.Models;
+using TournamentTrackerUI.LocalCommunication;
 
 namespace TournamentTrackerUI
 {
@@ -7,12 +8,14 @@ namespace TournamentTrackerUI
     {
         private readonly List<PersonModel> availableMembers = GlobalConfig.Connector.GetPerson_All();
         private readonly List<PersonModel> selectedMembers = new();
+        private readonly ITeamRequester clientProcess;
 
-        public CreateTeamForm()
+        public CreateTeamForm(ITeamRequester clientProcess)
         {
             InitializeComponent();
 
             // set up
+            this.clientProcess = clientProcess;
             WireUpLists();
 
             // event handlers
@@ -76,6 +79,8 @@ namespace TournamentTrackerUI
 
             GlobalConfig.Connector.CreateTeam(team);
 
+            clientProcess.ReceiveTeam(team);
+
             this.Close();
         }
 
@@ -122,7 +127,7 @@ namespace TournamentTrackerUI
 
         private bool ValidateTeamData()
         {
-            // TODO - Implement actual validation
+            // TODO - Implement team data validation
 
             if (teamNameTextBox.Text.Length < 1) { return false; }
 

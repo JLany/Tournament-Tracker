@@ -8,6 +8,11 @@
         public decimal PrizeAmount { get; set; }
         public int PrizePercentage { get; set; }
 
+        public string PrizeSummary
+        {
+            get => $"{PlaceNumber} - {PlaceName}";
+        }
+
         public PrizeModel() { }
 
         /// <summary>
