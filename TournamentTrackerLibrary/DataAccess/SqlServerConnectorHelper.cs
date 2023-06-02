@@ -41,4 +41,46 @@ public static class SqlServerConnectorHelper
             connection.Execute("dbo.spTournamentPrize_Insert", param, commandType: CommandType.StoredProcedure);
         }
     }
+
+    public static void SaveTournamentRounds(this IDbConnection connection
+        , TournamentModel tournament)
+    {
+        // foreach round
+        //     foreach matchup
+        //         save matchup
+        //         save matchup entries
+        //     endfor
+        // endfor
+
+
+        foreach (List<MatchupModel> round in tournament.Rounds)
+        {
+            foreach (var matchup in round)
+            {
+                var param = new DynamicParameters();
+                param.Add("@TournamentId", tournament.Id);
+                param.Add("@MatchupRound", matchup.MatchupRound);
+                param.Add("@Id", null, dbType: DbType.Int32, direction: ParameterDirection.Output);
+
+                connection.Execute("dbo.spMatchup_Insert", param, commandType: CommandType.StoredProcedure);
+
+                matchup.Id = param.Get<int>("@Id");
+
+                foreach (MatchupEntryModel entry in matchup.Entries)
+                {
+                    param = new DynamicParameters();
+                    param.Add("@MatchupId", matchup.Id);
+                    param.Add("@TeamId", entry.TeamCompeting?.Id);
+                    // TODO - Figure out what to do when there is no parent matchup
+                    param.Add("@ParentMatchupId", entry.ParentMatchup?.Id);
+                    param.Add("@Id", null, dbType: DbType.Int32, direction: ParameterDirection.Output);
+
+                    connection.Execute("dbo.spMatchupEntry_Insert"
+                        , param, commandType: CommandType.StoredProcedure);
+
+                    entry.Id = param.Get<int>("@Id");
+                }
+            }
+        }
+    }
 }

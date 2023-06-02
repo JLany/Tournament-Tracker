@@ -74,7 +74,6 @@ public partial class CreateTournamentForm : Form, IPrizeRequester, ITeamRequeste
             return;
         }
 
-        // TODO - We need to figure out how, where to add logic for generating rounds
         var tournament = new TournamentModel
         {
             TournamentName = tournamentNameTextBox.Text,
@@ -83,7 +82,9 @@ public partial class CreateTournamentForm : Form, IPrizeRequester, ITeamRequeste
             Prizes = selectedPrizes
         };
 
-        // TODO - Save tournament 
+        tournament.CreateRounds();
+
+        // TODO - Complete saving mechanism to include rounds saving
         GlobalConfig.Connector.CreateTournament(tournament);
     }
 

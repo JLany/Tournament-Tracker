@@ -61,6 +61,8 @@ namespace TournamentTrackerLibrary.DataAccess
                 param.Add("@TeamName", team.TeamName);
                 param.Add("@Id", null, dbType: DbType.Int32, direction: ParameterDirection.Output);
 
+                // TODO - Wrap creating a team into a transaction
+
                 connection.Execute("dbo.spTeam_Insert", param, commandType: CommandType.StoredProcedure);
 
                 team.Id = param.Get<int>("@Id");
@@ -88,12 +90,17 @@ namespace TournamentTrackerLibrary.DataAccess
                 param.Add("@EntryFee", tournament.EntryFee);
                 param.Add("@Id", null, dbType: DbType.Int32, direction: ParameterDirection.Output);
 
+                // TODO - Wrap creating a tournament into a transaction
+
                 connection.Execute("dbo.spTournament_Insert", param, commandType: CommandType.StoredProcedure);
 
                 tournament.Id = param.Get<int>("@Id");
 
                 connection.SaveTournamentEntries(tournament);
                 connection.SaveTournamentPrizes(tournament);
+                connection.SaveTournamentRounds(tournament);
+
+                // TODO - Save rounds to database
             }
 
             return tournament;
