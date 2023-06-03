@@ -192,6 +192,7 @@ public static class TextFileConnectorProcessor
         string prizeFileName)
     {
         var tournaments = new List<TournamentModel>();
+        var allMatchups = GlobalConfig.MatchupFile.FullFilePath().LoadFile().ConvertToMatchupModels();
         var allTeams = teamFileName.FullFilePath().LoadFile().ConvertToTeamModels(personFileName);
         var allPrizes = prizeFileName.FullFilePath().LoadFile().ConvertToPrizeModels();
 
@@ -220,7 +221,18 @@ public static class TextFileConnectorProcessor
                 tournament.Prizes.Add(allPrizes.Where(t => t.Id == int.Parse(id)).First());
             }
 
-            // TODO - Load rounds into the tournament
+            string[] rounds = cols[6].Split('|');
+            foreach (var round in rounds)
+            {
+                var matchups = new List<MatchupModel>();
+                string[] matchupIds = round.Split("^");
+                foreach (var id in  matchupIds)
+                {
+                    matchups.Add(allMatchups.Where(m => m.Id == int.Parse(id)).First());
+                }
+
+                tournament.Rounds.Add(matchups);
+            }
 
             tournaments.Add(tournament);
         }
@@ -229,14 +241,13 @@ public static class TextFileConnectorProcessor
     }
 
     // TODO - Lookup methods are a very large overhead, think them through 
-    // May be pass them a param (lookupTable)
-
+    // May be pass to them a param (lookupTable)
     private static MatchupModel? LookupMatchupById(string id)
     {
         // Here we prevent it from blowing up
         // Because MatchupEntryModels can contain ParentMatchup as null, 
         // thus no id for it in the MatchupEntryFile 
-        if (int.TryParse(id, out var matchupId))
+        if (id.Length > 0) 
         {
             var matchups =
                 GlobalConfig.MatchupFile
@@ -244,9 +255,10 @@ public static class TextFileConnectorProcessor
                 .LoadFile()
                 .ConvertToMatchupModels();
 
-            return matchups.Where(m => m.Id ==  matchupId).First();
+            // This way it will blow up on any string other than { "", "<number>" }
+            return matchups.Where(m => m.Id ==  int.Parse(id)).First();
         }
-        else
+        else // if empty, then no matchup (yet)
         {
             return null;
         }
@@ -273,7 +285,9 @@ public static class TextFileConnectorProcessor
 
     private static TeamModel? LookupTeamById(string id)
     {
-        if (int.TryParse(id, out var teamId))
+        // Here we prevent it from blowing up
+        // Because TeamCompeteing, Winner can be set as null 
+        if (id.Length > 0)
         {
             var teams =
             GlobalConfig.TeamFile
@@ -281,9 +295,10 @@ public static class TextFileConnectorProcessor
             .LoadFile()
             .ConvertToTeamModels(GlobalConfig.PersonFile);
 
+            // This way it will blow up on any string other than { "", "<number>" }
             return teams.Where(t => t.Id == int.Parse(id)).First();
         }
-        else
+        else // if empty, then no team (yet)
         {
             return null;
         }
