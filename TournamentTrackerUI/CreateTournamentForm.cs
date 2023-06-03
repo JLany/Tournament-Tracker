@@ -85,6 +85,10 @@ public partial class CreateTournamentForm : Form, IPrizeRequester, ITeamRequeste
         tournament.CreateRounds();
 
         GlobalConfig.Connector.CreateTournament(tournament);
+
+        // TODO - Send back the tournament to the caller
+
+        this.Close();
     }
 
     private void RemoveSelectedPrizeButton_Click(object? sender, EventArgs e)
