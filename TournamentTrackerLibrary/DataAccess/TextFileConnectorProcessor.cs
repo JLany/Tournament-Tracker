@@ -191,15 +191,14 @@ public static class TextFileConnectorProcessor
         string personFileName,
         string prizeFileName)
     {
-        // {id,name,entryFee,active,list of teams' ids,list of prizes' ids,list of rounds' ids}
-        // {15,CHAMPS,120,1,5|65|41|17|6,7|3|55|23,6^3^12|8^2|8^1
-
         var tournaments = new List<TournamentModel>();
         var allTeams = teamFileName.FullFilePath().LoadFile().ConvertToTeamModels(personFileName);
         var allPrizes = prizeFileName.FullFilePath().LoadFile().ConvertToPrizeModels();
 
         foreach (var line in lines)
         {
+            // {id,name,entryFee,active,list of teams' ids,list of prizes' ids,list of rounds' ids}
+            // {15,CHAMPS,120,1,5|65|41|17|6,7|3|55|23,6^3^12|8^2|8^1
             string[] cols = line.Split(',');
 
             var tournament = new TournamentModel
@@ -212,7 +211,7 @@ public static class TextFileConnectorProcessor
             string[] enteredTeamsIds = cols[4].Split('|');
             foreach (string id in  enteredTeamsIds)
             {
-                tournament.EnteredTeams.Add(allTeams.Where(t => t.Id == int.Parse(id)).First());
+                tournament.EnteredTeams.Add(LookupTeamById(id));
             }
             
             string[] tournamentPrizesIds = cols[5].Split('|');
@@ -228,6 +227,9 @@ public static class TextFileConnectorProcessor
 
         return tournaments;
     }
+
+    // TODO - Lookup methods are a very large overhead, think them through 
+    // May be pass them a param (lookupTable)
 
     private static MatchupModel? LookupMatchupById(string id)
     {
@@ -287,14 +289,6 @@ public static class TextFileConnectorProcessor
         }
     }
 
-    public static void SaveRounds(this TournamentModel tournament)
-    {
-        foreach (List<MatchupModel> round in tournament.Rounds)
-        {
-            CreateMatchups(round);
-        }
-    }
-
     private static void CreateMatchupEntries(List<MatchupEntryModel> matchupEntries)
     {
         var allMatchupEntries =
@@ -343,6 +337,14 @@ public static class TextFileConnectorProcessor
         }
 
         allMatchups.SaveToMatchupFile();
+    }
+
+    public static void SaveRounds(this TournamentModel tournament)
+    {
+        foreach (List<MatchupModel> round in tournament.Rounds)
+        {
+            CreateMatchups(round);
+        }
     }
 
     public static void SaveToModelFile<T>(this List<T> models, string fileName) where T : class
@@ -452,6 +454,7 @@ public static class TextFileConnectorProcessor
         foreach (var model in models)
         {
             // Very shitty piece of code, but will try
+            // TODO - (OPTIONAL) Could be better
             if (typeof(T).Name == typeof(List<>).Name)
             {
                 output += $"{(model as List<MatchupModel>)?.ConvertIdsToString('^')}{delim}";

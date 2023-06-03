@@ -71,7 +71,6 @@ public static class SqlServerConnectorHelper
                     param = new DynamicParameters();
                     param.Add("@MatchupId", matchup.Id);
                     param.Add("@TeamId", entry.TeamCompeting?.Id);
-                    // TODO - Figure out what to do when there is no parent matchup
                     param.Add("@ParentMatchupId", entry.ParentMatchup?.Id);
                     param.Add("@Id", null, dbType: DbType.Int32, direction: ParameterDirection.Output);
 

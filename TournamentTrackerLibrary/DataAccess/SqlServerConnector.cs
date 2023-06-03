@@ -99,8 +99,6 @@ namespace TournamentTrackerLibrary.DataAccess
                 connection.SaveTournamentEntries(tournament);
                 connection.SaveTournamentPrizes(tournament);
                 connection.SaveTournamentRounds(tournament);
-
-                // TODO - Save rounds to database
             }
 
             return tournament;
