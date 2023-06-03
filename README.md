@@ -6,6 +6,7 @@
 -	Schedules games.
 -	A single loss eliminates a player.
 -	The last player standing is the winner.
+-	Build your own team.
 <br></br>
 ## Technology:
 - C#
