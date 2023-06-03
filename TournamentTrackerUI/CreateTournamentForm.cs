@@ -1,6 +1,6 @@
 ﻿using TournamentTrackerLibrary;
 using TournamentTrackerLibrary.Models;
-using TournamentTrackerUI.LocalCommunication;
+using TournamentTrackerUI.InterCommunication;
 
 namespace TournamentTrackerUI;
 
@@ -84,7 +84,6 @@ public partial class CreateTournamentForm : Form, IPrizeRequester, ITeamRequeste
 
         tournament.CreateRounds();
 
-        // TODO - Complete saving mechanism to include rounds saving
         GlobalConfig.Connector.CreateTournament(tournament);
     }
 

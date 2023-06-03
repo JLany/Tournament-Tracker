@@ -1,128 +1,132 @@
 ﻿using TournamentTrackerLibrary.DataAccess.TextFileHelpers;
 using TournamentTrackerLibrary.Models;
 
-namespace TournamentTrackerLibrary.DataAccess
+namespace TournamentTrackerLibrary.DataAccess;
+
+public class TextFileConnector : IDataConnector
 {
-    public class TextFileConnector : IDataConnector
+    // TODO - (OPTIONAL) Take a look at AutoMapper, useful to learn
+
+    private const string PersonFile = "PersonModels.csv";
+    private const string PrizeFile = "PrizeModel.csv";
+    private const string TeamFile = "TeamModels.csv";
+    private const string TournamentFile = "TournamentModels.csv";
+    private const string MatchupFile = "MatchupModels.csv";
+    private const string MatchupEntryFile = "MatchupEntryModels.csv";
+
+    public PersonModel CreatePerson(PersonModel person)
     {
-        // TODO - (OPTIONAL) Take a look at AutoMapper, useful to learn
+        // Load text file contents and convert them to List<PrizeModel>
+        var persons = GetPerson_All();
 
-        private const string PersonsFile = "PersonModels.csv";
-        private const string PrizesFile = "PrizeModel.csv";
-        private const string TeamsFile = "TeamModels.csv";
-        private const string TournamentsFile = "TournamentModels.csv";
+        // Find the max Id 
+        int currentId = 1;
 
-        public PersonModel CreatePerson(PersonModel person)
+        if (persons.Count > 0)
         {
-            // Load text file contents and convert them to List<PrizeModel>
-            var persons = GetPerson_All();
-
-            // Find the max Id 
-            int currentId = 1;
-
-            if (persons.Count > 0)
-            {
-                currentId = persons.OrderByDescending(p => p.Id).First().Id + 1;
-            }
-
-            // Assign the new Id to model
-            person.Id = currentId;
-
-            // Add model to prizes list
-            persons.Add(person);
-
-            // Convert prizes list to List<string> and save text to the text file
-            persons.SaveToModelFile(PersonsFile);
-
-            return person;
+            currentId = persons.OrderByDescending(p => p.Id).First().Id + 1;
         }
 
-        public PrizeModel CreatePrize(PrizeModel prize)
+        // Assign the new Id to model
+        person.Id = currentId;
+
+        // Add model to prizes list
+        persons.Add(person);
+
+        // Convert prizes list to List<string> and save text to the text file
+        persons.SaveToModelFile(PersonFile);
+
+        return person;
+    }
+
+    public PrizeModel CreatePrize(PrizeModel prize)
+    {
+        // Load text file contents and convert them to List<PrizeModel>
+        var prizes = PrizeFile.FullFilePath().LoadFile().ConvertToPrizeModels();
+
+        // Find the max Id 
+        int currentId = 1;
+
+        if (prizes.Count > 0)
         {
-            // Load text file contents and convert them to List<PrizeModel>
-            var prizes = PrizesFile.FullFilePath().LoadFile().ConvertToPrizeModels();
-
-            // Find the max Id 
-            int currentId = 1;
-
-            if (prizes.Count > 0)
-            {
-                currentId = prizes.OrderByDescending(p => p.Id).First().Id + 1;
-            }
-
-            // Assign the new Id to model
-            prize.Id = currentId;
-
-            // Add model to prizes list
-            prizes.Add(prize);
-
-            // Convert prizes list to List<string> and save text to the text file
-            prizes.SaveToModelFile(PrizesFile);
-
-            return prize;
+            currentId = prizes.OrderByDescending(p => p.Id).First().Id + 1;
         }
 
-        public TeamModel CreateTeam(TeamModel team)
+        // Assign the new Id to model
+        prize.Id = currentId;
+
+        // Add model to prizes list
+        prizes.Add(prize);
+
+        // Convert prizes list to List<string> and save text to the text file
+        prizes.SaveToModelFile(PrizeFile);
+
+        return prize;
+    }
+
+    public TeamModel CreateTeam(TeamModel team)
+    {
+        // Load all teams from teams text file
+        var teams = TeamFile.FullFilePath().LoadFile().ConvertToTeamModels(PersonFile);
+
+        // Find the max Id
+        int currentId = 1;
+
+        if (teams.Count > 0)
         {
-            // Load all teams from teams text file
-            var teams = TeamsFile.FullFilePath().LoadFile().ConvertToTeamModels(PersonsFile);
-
-            // Find the max Id
-            int currentId = 1;
-
-            if (teams.Count > 0)
-            {
-                currentId = teams.OrderByDescending(t => t.Id).First().Id + 1;
-            }
-
-            // Assign the new Id to our model
-            team.Id = currentId;
-
-            // Add model to teams list
-            teams.Add(team);
-
-            // Convert to list of string, and save to file
-            teams.SaveToTeamModelFile(TeamsFile);
-
-            return team;
+            currentId = teams.OrderByDescending(t => t.Id).First().Id + 1;
         }
 
-        public TournamentModel CreateTournament(TournamentModel tournament)
+        // Assign the new Id to our model
+        team.Id = currentId;
+
+        // Add model to teams list
+        teams.Add(team);
+
+        // Convert to list of string, and save to file
+        teams.SaveToTeamFile(TeamFile);
+
+        return team;
+    }
+
+    public TournamentModel CreateTournament(TournamentModel tournament)
+    {
+        var tournaments =
+            TournamentFile
+            .FullFilePath()
+            .LoadFile()
+            .ConvertToTournamentModels(TeamFile, PersonFile, PrizeFile);
+
+        int currentId = 1;
+
+        if (tournaments.Count > 0)
         {
-            var tournaments =
-                TournamentsFile
-                .FullFilePath()
-                .LoadFile()
-                .ConvertToTournamentModels(TeamsFile, PersonsFile, PrizesFile);
-
-            int currentId = 1;
-
-            if (tournaments.Count > 0)
-            {
-                currentId = tournaments.OrderByDescending(t => t.Id).First().Id + 1;
-            }
-
-            tournament.Id = currentId;
-
-            tournaments.Add(tournament);
-            tournaments.SaveToTournamentModelFile(TournamentsFile);
-
-            return tournament;
+            currentId = tournaments.OrderByDescending(t => t.Id).First().Id + 1;
         }
 
-        public List<PersonModel> GetPerson_All()
-        {
-            return PersonsFile.FullFilePath().LoadFile().ConvertToPersonModels();
-        }
+        tournament.Id = currentId;
 
-        public List<TeamModel> GetTeam_All()
-        {
-            return TeamsFile.FullFilePath().LoadFile().ConvertToTeamModels(PersonsFile);
-        }
+        tournament.SaveRounds();
 
-        public List<TournamentModel> GetTournament_All()
-        {
-            throw new NotImplementedException();
-        }
+        tournaments.Add(tournament);
+
+        tournaments.SaveToTournamentFile(TournamentFile);
+
+        return tournament;
+    }
+
+    public List<PersonModel> GetPerson_All()
+    {
+        return PersonFile.FullFilePath().LoadFile().ConvertToPersonModels();
+    }
+
+    public List<TeamModel> GetTeam_All()
+    {
+        return TeamFile.FullFilePath().LoadFile().ConvertToTeamModels(PersonFile);
+    }
+
+    public List<TournamentModel> GetTournament_All()
+    {
+        throw new NotImplementedException();
     }
 }
