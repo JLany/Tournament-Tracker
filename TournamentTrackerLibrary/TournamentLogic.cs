@@ -9,8 +9,6 @@ namespace TournamentTrackerLibrary
 {
     public static class TournamentLogic
     {
-        // TODO - Figure out a way to store matchups before tournaments to obtain their ids
-
         public static void CreateRounds(this TournamentModel tournament)
         {
             // Order list of teams randomly

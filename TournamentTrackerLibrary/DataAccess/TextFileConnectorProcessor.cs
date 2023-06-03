@@ -31,7 +31,7 @@ public static class TextFileConnectorProcessor
         return File.ReadAllLines(filePath).ToList();
     }
 
-    private static List<MatchupEntryModel> ConvertToMatchupEntryModels(this List<string> lines)
+    private static List<MatchupEntryModel> GetRawMatchupEntryModels(this List<string> lines)
     {
         var matchupEntries = new List<MatchupEntryModel>();
 
@@ -39,6 +39,30 @@ public static class TextFileConnectorProcessor
         {
             //{id,TeamCompeting,Score,ParentMatchup}
             string[] cols = line.Split(',');
+
+            var matchupEntry = new MatchupEntryModel
+            {
+                Id = int.Parse(cols[0]),
+                TeamCompeting = LookupTeamById(cols[1]),
+                Score = double.Parse(cols[2])
+            };
+
+            matchupEntries.Add(matchupEntry);
+        }
+
+        return matchupEntries;
+    }
+
+    private static List<MatchupEntryModel> ConvertToMatchupEntryModels(this List<string> lines)
+    {
+        var matchupEntries = new List<MatchupEntryModel>();
+        List<string> parentIds = new();
+
+        foreach (var line in lines)
+        {
+            //{id,TeamCompeting,Score,ParentMatchup}
+            string[] cols = line.Split(',');
+
 
             var matchupEntry = new MatchupEntryModel
             {
@@ -232,7 +256,7 @@ public static class TextFileConnectorProcessor
             GlobalConfig.MatchupEntryFile
             .FullFilePath()
             .LoadFile()
-            .ConvertToMatchupEntryModels();
+            .GetRawMatchupEntryModels();
 
         List<MatchupEntryModel> output = new();
 
@@ -395,7 +419,7 @@ public static class TextFileConnectorProcessor
 
         foreach (TournamentModel t in tournaments)
         {
-            string line = $"{t.Id},{t.TournamentName},{t.EntryFee}" +
+            string line = $"{t.Id},{t.TournamentName},{t.EntryFee},{1}" +
                 $",{t.EnteredTeams.ConvertIdsToString('|')}" +
                 $",{t.Prizes.ConvertIdsToString('|')}" +
                 $",{t.Rounds.ConvertIdsToString('|')}";
@@ -427,16 +451,19 @@ public static class TextFileConnectorProcessor
 
         foreach (var model in models)
         {
-            if (model is List<T>)
+            // Very shitty piece of code, but will try
+            if (typeof(T).Name == typeof(List<>).Name)
             {
-                output += (model as List<T>)?.ConvertIdsToString('^');
+                output += $"{(model as List<MatchupModel>)?.ConvertIdsToString('^')}{delim}";
             }
             else if (model is IDataModel) 
             {
                 output += $"{(model as IDataModel)?.Id}{delim}";
             }
-
-            // TODO - else: throw exception
+            else
+            {
+                throw new InvalidOperationException();
+            }
         }
 
         if (output.Length > 0)
