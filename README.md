@@ -6,3 +6,9 @@
 -	Schedules games.
 -	A single loss eliminates a player.
 -	The last player standing is the winner.
+<br></br>
+## Technology:
+- C#
+- WinForms
+- MS SQL Server
+- Dapper
