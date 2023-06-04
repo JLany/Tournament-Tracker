@@ -206,7 +206,7 @@ public static class TextFileConnectorProcessor
             foreach (var round in rounds)
             {
                 var matchups = new List<MatchupModel>();
-                string[] matchupIds = round.Split("^");
+                string[] matchupIds = round.Split('^');
                 foreach (var id in  matchupIds)
                 {
                     matchups.Add(allMatchups.Where(m => m.Id == int.Parse(id)).First());
