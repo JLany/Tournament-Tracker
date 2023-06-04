@@ -32,7 +32,7 @@ namespace TournamentTrackerLibrary
         }
 
         public const string PersonFile = "PersonModels.csv";
-        public const string PrizeFile = "PrizeModel.csv";
+        public const string PrizeFile = "PrizeModels.csv";
         public const string TeamFile = "TeamModels.csv";
         public const string TournamentFile = "TournamentModels.csv";
         public const string MatchupFile = "MatchupModels.csv";

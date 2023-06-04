@@ -8,7 +8,7 @@ public class TextFileConnector : IDataConnector
     // TODO - (OPTIONAL) Take a look at AutoMapper, useful to learn
 
     private const string PersonFile = "PersonModels.csv";
-    private const string PrizeFile = "PrizeModel.csv";
+    private const string PrizeFile = "PrizeModels.csv";
     private const string TeamFile = "TeamModels.csv";
     private const string TournamentFile = "TournamentModels.csv";
     private const string MatchupFile = "MatchupModels.csv";

@@ -131,6 +131,7 @@ public partial class CreateTournamentForm : Form, IPrizeRequester, ITeamRequeste
         prizesListBox.DisplayMember = "PrizeSummary";
     }
 
+    // TODO - Implement validation for ALL names not to contain a comma (,)!
     private bool ValidateTournamentData()
     {
         // TODO - Implement tournament data validation

@@ -31,28 +31,6 @@ public static class TextFileConnectorProcessor
         return File.ReadAllLines(filePath).ToList();
     }
 
-    private static List<MatchupEntryModel> GetRawMatchupEntryModels(this List<string> lines)
-    {
-        var matchupEntries = new List<MatchupEntryModel>();
-
-        foreach (var line in lines)
-        {
-            //{id,TeamCompeting,Score,ParentMatchup}
-            string[] cols = line.Split(',');
-
-            var matchupEntry = new MatchupEntryModel
-            {
-                Id = int.Parse(cols[0]),
-                TeamCompeting = LookupTeamById(cols[1]),
-                Score = double.Parse(cols[2])
-            };
-
-            matchupEntries.Add(matchupEntry);
-        }
-
-        return matchupEntries;
-    }
-
     private static List<MatchupEntryModel> ConvertToMatchupEntryModels(this List<string> lines)
     {
         var matchupEntries = new List<MatchupEntryModel>();
@@ -212,7 +190,7 @@ public static class TextFileConnectorProcessor
             string[] enteredTeamsIds = cols[4].Split('|');
             foreach (string id in  enteredTeamsIds)
             {
-                tournament.EnteredTeams.Add(LookupTeamById(id));
+                tournament.EnteredTeams.Add(allTeams.Where(t => t.Id == int.Parse(id)).First());
             }
             
             string[] tournamentPrizesIds = cols[5].Split('|');
@@ -240,8 +218,6 @@ public static class TextFileConnectorProcessor
         return tournaments;
     }
 
-    // TODO - Lookup methods are a very large overhead, think them through 
-    // May be pass to them a param (lookupTable)
     private static MatchupModel? LookupMatchupById(string id)
     {
         // Here we prevent it from blowing up
@@ -252,11 +228,21 @@ public static class TextFileConnectorProcessor
             var matchups =
                 GlobalConfig.MatchupFile
                 .FullFilePath()
-                .LoadFile()
-                .ConvertToMatchupModels();
+                .LoadFile();
 
-            // This way it will blow up on any string other than { "", "<number>" }
-            return matchups.Where(m => m.Id ==  int.Parse(id)).First();
+            foreach (string matchup in matchups)
+            {
+                string matchupId = matchup.Split(',').First();
+                if (matchupId == id)
+                {
+                    return 
+                        new List<string> { matchup }
+                        .ConvertToMatchupModels()
+                        .First();
+                }
+            }
+
+            throw new FormatException("Invalid Matchup Id was encountered in MatchupModels.csv");
         }
         else // if empty, then no matchup (yet)
         {
@@ -269,20 +255,32 @@ public static class TextFileConnectorProcessor
         var matchupEtnries =
             GlobalConfig.MatchupEntryFile
             .FullFilePath()
-            .LoadFile()
-            .GetRawMatchupEntryModels();
+            .LoadFile();
 
-        List<MatchupEntryModel> output = new();
+        List<string> selectedMatchupEntries = new();
 
         string[] entriesIds = ids.Split('|');
         foreach (string id in entriesIds)
         {
-            output.Add(matchupEtnries.Where(e => e.Id == int.Parse(id)).First());
+            foreach (string entry in matchupEtnries)
+            {
+                string entryId = entry.Split('|').First();
+                if (entryId == id)
+                {
+                    selectedMatchupEntries.Add(entry);
+                }
+            }
         }
 
-        return output;
+        return selectedMatchupEntries.ConvertToMatchupEntryModels();
     }
 
+    /// <summary>
+    /// Lookup for a <em>possibly</em> existing team. <br></br> 
+    /// Should not be used when there <em>must</em> be a team!
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     private static TeamModel? LookupTeamById(string id)
     {
         // Here we prevent it from blowing up
@@ -304,7 +302,7 @@ public static class TextFileConnectorProcessor
         }
     }
 
-    private static void CreateMatchupEntries(List<MatchupEntryModel> matchupEntries)
+    private static void CreateMatchupEntries(this List<MatchupEntryModel> matchupEntries)
     {
         var allMatchupEntries =
             GlobalConfig.MatchupEntryFile
@@ -328,7 +326,7 @@ public static class TextFileConnectorProcessor
         allMatchupEntries.SaveToMatchupEntryFile();
     }
 
-    private static void CreateMatchups(List<MatchupModel> matchups)
+    private static void CreateMatchups(this List<MatchupModel> matchups)
     {
         var allMatchups = 
             GlobalConfig.MatchupFile
@@ -348,7 +346,7 @@ public static class TextFileConnectorProcessor
             matchup.Id = currentId++;
             allMatchups.Add(matchup);
 
-            CreateMatchupEntries(matchup.Entries);
+            matchup.Entries.CreateMatchupEntries();
         }
 
         allMatchups.SaveToMatchupFile();
@@ -358,7 +356,7 @@ public static class TextFileConnectorProcessor
     {
         foreach (List<MatchupModel> round in tournament.Rounds)
         {
-            CreateMatchups(round);
+            round.CreateMatchups();
         }
     }
 
