@@ -192,11 +192,14 @@ public static class TextFileConnectorProcessor
             {
                 tournament.EnteredTeams.Add(allTeams.Where(t => t.Id == int.Parse(id)).First());
             }
-            
-            string[] tournamentPrizesIds = cols[5].Split('|');
-            foreach (string id in  tournamentPrizesIds)
+
+            if (cols[5].Length > 0) // if there are prizes
             {
-                tournament.Prizes.Add(allPrizes.Where(t => t.Id == int.Parse(id)).First());
+                string[] tournamentPrizesIds = cols[5].Split('|');
+                foreach (string id in tournamentPrizesIds)
+                {
+                    tournament.Prizes.Add(allPrizes.Where(t => t.Id == int.Parse(id)).First());
+                }
             }
 
             string[] rounds = cols[6].Split('|');
