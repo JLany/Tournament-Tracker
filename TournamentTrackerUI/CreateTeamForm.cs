@@ -1,6 +1,6 @@
 ﻿using TournamentTrackerLibrary;
+using TournamentTrackerLibrary.InterCommunication;
 using TournamentTrackerLibrary.Models;
-using TournamentTrackerUI.InterCommunication;
 
 namespace TournamentTrackerUI
 {

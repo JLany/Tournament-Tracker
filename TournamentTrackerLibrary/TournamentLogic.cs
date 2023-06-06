@@ -82,7 +82,7 @@ namespace TournamentTrackerLibrary
             return (int)Math.Pow(2, nRounds) - nTeams;
         }
 
-        private static int NumberOfRounds(int teamCount)
+        public static int NumberOfRounds(int teamCount)
         {
             return (int)Math.Ceiling(Math.Log2(teamCount));
         }

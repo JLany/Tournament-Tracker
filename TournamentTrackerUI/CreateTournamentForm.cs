@@ -1,6 +1,6 @@
 ﻿using TournamentTrackerLibrary;
+using TournamentTrackerLibrary.InterCommunication;
 using TournamentTrackerLibrary.Models;
-using TournamentTrackerUI.InterCommunication;
 
 namespace TournamentTrackerUI;
 
@@ -9,12 +9,14 @@ public partial class CreateTournamentForm : Form, IPrizeRequester, ITeamRequeste
     private readonly List<TeamModel> availableTeams = GlobalConfig.Connector.GetTeam_All();
     private readonly List<TeamModel> selectedTeams = new();
     private readonly List<PrizeModel> selectedPrizes = new();
+    private readonly ITournamentRequester clientProcess;
 
-    public CreateTournamentForm()
+    public CreateTournamentForm(ITournamentRequester client)
     {
         InitializeComponent();
 
         // Set up 
+        clientProcess = client;
         WireUpLists();
 
         // Event handlers
@@ -86,7 +88,7 @@ public partial class CreateTournamentForm : Form, IPrizeRequester, ITeamRequeste
 
         GlobalConfig.Connector.CreateTournament(tournament);
 
-        // TODO - Send back the tournament to the caller
+        clientProcess.ReceiveTournament(tournament);
 
         this.Close();
     }

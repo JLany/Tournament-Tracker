@@ -5,10 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using TournamentTrackerLibrary.Models;
 
-namespace TournamentTrackerUI.InterCommunication
+namespace TournamentTrackerLibrary.InterCommunication;
+
+public interface ITournamentRequester
 {
-    public interface IPrizeRequester
-    {
-        void ReceivePrize(PrizeModel prize);
-    }
+    void ReceiveTournament(TournamentModel tournament);
 }

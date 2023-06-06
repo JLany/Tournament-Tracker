@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             headerLabel = new Label();
-            loadExistingTournamentComboBox = new ComboBox();
+            selectTournamentComboBox = new ComboBox();
             loadExistingTournamentLabel = new Label();
             loadTournamentButton = new Button();
             createTournamentButton = new Button();
@@ -46,13 +46,13 @@
             headerLabel.TabIndex = 26;
             headerLabel.Text = "Tournament Dashboard";
             // 
-            // loadExistingTournamentComboBox
+            // selectTournamentComboBox
             // 
-            loadExistingTournamentComboBox.FormattingEnabled = true;
-            loadExistingTournamentComboBox.Location = new Point(64, 169);
-            loadExistingTournamentComboBox.Name = "loadExistingTournamentComboBox";
-            loadExistingTournamentComboBox.Size = new Size(396, 38);
-            loadExistingTournamentComboBox.TabIndex = 28;
+            selectTournamentComboBox.FormattingEnabled = true;
+            selectTournamentComboBox.Location = new Point(64, 169);
+            selectTournamentComboBox.Name = "selectTournamentComboBox";
+            selectTournamentComboBox.Size = new Size(396, 38);
+            selectTournamentComboBox.TabIndex = 28;
             // 
             // loadExistingTournamentLabel
             // 
@@ -103,7 +103,7 @@
             ClientSize = new Size(525, 425);
             Controls.Add(createTournamentButton);
             Controls.Add(loadTournamentButton);
-            Controls.Add(loadExistingTournamentComboBox);
+            Controls.Add(selectTournamentComboBox);
             Controls.Add(loadExistingTournamentLabel);
             Controls.Add(headerLabel);
             Font = new Font("Segoe UI", 15.75F, FontStyle.Regular, GraphicsUnit.Point);
@@ -117,7 +117,7 @@
         #endregion
 
         private Label headerLabel;
-        private ComboBox loadExistingTournamentComboBox;
+        private ComboBox selectTournamentComboBox;
         private Label loadExistingTournamentLabel;
         private Button loadTournamentButton;
         private Button createTournamentButton;

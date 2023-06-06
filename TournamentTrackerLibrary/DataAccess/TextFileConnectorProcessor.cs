@@ -164,15 +164,12 @@ public static class TextFileConnectorProcessor
         return teams;
     }
 
-    public static List<TournamentModel> ConvertToTournamentModels(this List<string> lines,
-        string teamFileName,
-        string personFileName,
-        string prizeFileName)
+    public static List<TournamentModel> ConvertToTournamentModels(this List<string> lines)
     {
         var tournaments = new List<TournamentModel>();
         var allMatchups = GlobalConfig.MatchupFile.FullFilePath().LoadFile().ConvertToMatchupModels();
-        var allTeams = teamFileName.FullFilePath().LoadFile().ConvertToTeamModels(personFileName);
-        var allPrizes = prizeFileName.FullFilePath().LoadFile().ConvertToPrizeModels();
+        var allTeams = GlobalConfig.TeamFile.FullFilePath().LoadFile().ConvertToTeamModels(GlobalConfig.PersonFile);
+        var allPrizes = GlobalConfig.PrizeFile.FullFilePath().LoadFile().ConvertToPrizeModels();
 
         foreach (var line in lines)
         {

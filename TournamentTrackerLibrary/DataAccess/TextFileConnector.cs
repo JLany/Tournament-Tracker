@@ -95,7 +95,7 @@ public class TextFileConnector : IDataConnector
             TournamentFile
             .FullFilePath()
             .LoadFile()
-            .ConvertToTournamentModels(TeamFile, PersonFile, PrizeFile);
+            .ConvertToTournamentModels();
 
         int currentId = 1;
 
@@ -127,6 +127,10 @@ public class TextFileConnector : IDataConnector
 
     public List<TournamentModel> GetTournament_All()
     {
-        throw new NotImplementedException();
+        return
+            GlobalConfig.TournamentFile
+            .FullFilePath()
+            .LoadFile()
+            .ConvertToTournamentModels();
     }
 }

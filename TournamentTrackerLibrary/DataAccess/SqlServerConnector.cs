@@ -8,10 +8,12 @@ namespace TournamentTrackerLibrary.DataAccess
 {
     public class SqlServerConnector : IDataConnector
     {
+        private const string DatabaseName = "Tournaments";
+
         public PersonModel CreatePerson(PersonModel person)
         {
             using (IDbConnection connection = 
-                new System.Data.SqlClient.SqlConnection(GlobalConfig.GetConnectionString("Tournaments")))
+                new System.Data.SqlClient.SqlConnection(GlobalConfig.GetConnectionString(DatabaseName)))
             {
                 var param = new DynamicParameters();
                 param.Add("@FirstName", person.FirstName);
@@ -31,7 +33,7 @@ namespace TournamentTrackerLibrary.DataAccess
         public PrizeModel CreatePrize(PrizeModel prize)
         {
             using (IDbConnection connection = 
-                new System.Data.SqlClient.SqlConnection(GlobalConfig.GetConnectionString("Tournaments")))
+                new System.Data.SqlClient.SqlConnection(GlobalConfig.GetConnectionString(DatabaseName)))
             {
                 var param = new DynamicParameters();
                 param.Add("@PlaceNumber", prize.PlaceNumber);
@@ -55,7 +57,7 @@ namespace TournamentTrackerLibrary.DataAccess
         public TeamModel CreateTeam(TeamModel team)
         {
             using (IDbConnection connection =
-                new System.Data.SqlClient.SqlConnection(GlobalConfig.GetConnectionString("Tournaments")))
+                new System.Data.SqlClient.SqlConnection(GlobalConfig.GetConnectionString(DatabaseName)))
             {
                 var param = new DynamicParameters();
                 param.Add("@TeamName", team.TeamName);
@@ -83,7 +85,7 @@ namespace TournamentTrackerLibrary.DataAccess
         public TournamentModel CreateTournament(TournamentModel tournament)
         {
             using (IDbConnection connection =
-                new System.Data.SqlClient.SqlConnection(GlobalConfig.GetConnectionString("Tournaments")))
+                new System.Data.SqlClient.SqlConnection(GlobalConfig.GetConnectionString(DatabaseName)))
             {
                 var param = new DynamicParameters();
                 param.Add("@TournamentName", tournament.TournamentName);
@@ -109,7 +111,7 @@ namespace TournamentTrackerLibrary.DataAccess
             var output = new List<PersonModel>();
 
             using (IDbConnection connection =
-                new System.Data.SqlClient.SqlConnection(GlobalConfig.GetConnectionString("Tournaments")))
+                new System.Data.SqlClient.SqlConnection(GlobalConfig.GetConnectionString(DatabaseName)))
             {
                 output = connection.Query<PersonModel>("dbo.spPerson_GetAll"
                     , commandType: CommandType.StoredProcedure).ToList();
@@ -123,18 +125,14 @@ namespace TournamentTrackerLibrary.DataAccess
             var output = new List<TeamModel>();
 
             using (IDbConnection connection =
-                new System.Data.SqlClient.SqlConnection(GlobalConfig.GetConnectionString("Tournaments")))
+                new System.Data.SqlClient.SqlConnection(GlobalConfig.GetConnectionString(DatabaseName)))
             {
                 output = connection.Query<TeamModel>("dbo.spTeam_GetAll"
                     , commandType: CommandType.StoredProcedure).ToList();
 
                 foreach (var team in output)
                 {
-                    var param = new DynamicParameters();
-                    param.Add("@TeamId", team.Id);
-
-                    team.TeamMembers = connection.Query<PersonModel>("dbo.spTeamMember_GetByTeam"
-                        , param, commandType: CommandType.StoredProcedure).ToList();
+                    team.TeamMembers = connection.GetPerson_ByTeam(team.Id);
                 }
             }
 
@@ -143,7 +141,30 @@ namespace TournamentTrackerLibrary.DataAccess
 
         public List<TournamentModel> GetTournament_All()
         {
-            throw new NotImplementedException();
+            var output = new List<TournamentModel>();
+
+            using (IDbConnection connection = 
+                new System.Data.SqlClient.SqlConnection(GlobalConfig.GetConnectionString(DatabaseName)))
+            {
+                output = connection.Query<TournamentModel>("dbo.spTournament_GetAll").ToList();
+
+                foreach (var tournament in output)
+                {
+                    // Load teams
+                    tournament.EnteredTeams = connection.GetTeam_ByParameter(
+                        "dbo.spTournamentEntry_GetByTournament", 
+                        "@TournamentId", 
+                        tournament.Id);
+
+                    // Load prizes
+                    tournament.Prizes = connection.GetPrize_ByTournament(tournament.Id);
+
+                    // Load rounds
+                    tournament.Rounds = connection.LoadTournamentRounds(tournament);
+                }
+            }
+
+            return output;
         }
     }
 }

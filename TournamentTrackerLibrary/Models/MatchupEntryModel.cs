@@ -9,8 +9,13 @@
         /// <summary>
         /// Team particepating in the matchup
         /// </summary>
-        public TeamModel TeamCompeting { get; set; }
+        public TeamModel? TeamCompeting { get; set; }
         public double Score { get; set; }
-        public MatchupModel ParentMatchup { get; set; }
+
+        /// <summary>
+        /// Unique database identifier for ParentMatchup.<br></br> Used to acquire ParentMatchup.
+        /// </summary>
+        public int ParentMatchupId { get; set; }
+        public MatchupModel? ParentMatchup { get; set; }
     }
 }
