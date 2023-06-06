@@ -264,7 +264,8 @@ public static class TextFileConnectorProcessor
         {
             foreach (string entry in matchupEtnries)
             {
-                string entryId = entry.Split('|').First();
+                // {id,TeamCompetingId,Score,ParentMatchupId}
+                string entryId = entry.Split(',').First();
                 if (entryId == id)
                 {
                     selectedMatchupEntries.Add(entry);
