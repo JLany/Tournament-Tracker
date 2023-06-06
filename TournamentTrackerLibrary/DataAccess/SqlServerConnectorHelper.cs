@@ -55,13 +55,11 @@ public static class SqlServerConnectorHelper
         return output;
     }
 
-    public static List<List<MatchupModel>> LoadTournamentRounds(this  IDbConnection connection
+    public static List<Round> LoadTournamentRounds(this  IDbConnection connection
         , TournamentModel tournament)
     {
         int roundsCount = TournamentLogic.NumberOfRounds(tournament.EnteredTeams.Count);
-        var rounds = new List<List<MatchupModel>>();
-        for (int i = 1; i <= roundsCount; ++i)
-            rounds.Add(new List<MatchupModel>());
+        var rounds = Enumerable.Repeat(new Round(), roundsCount).ToList();
 
         var param = new DynamicParameters();
         param.Add("@TournamentId", tournament.Id);
@@ -101,10 +99,10 @@ public static class SqlServerConnectorHelper
                 .FirstOrDefault();
 
             // Add to the corresponding round
-            rounds[matchup.MatchupRound - 1].Add(matchup); // (zero based)
+            rounds[matchup.MatchupRound - 1].Matchups.Add(matchup); // (zero based)
         }
 
-        return rounds;
+        return rounds.ToList();
     }
 
     public static void SaveTournamentEntries(this IDbConnection connection
@@ -144,9 +142,9 @@ public static class SqlServerConnectorHelper
         // endfor
 
 
-        foreach (List<MatchupModel> round in tournament.Rounds)
+        foreach (var round in tournament.Rounds)
         {
-            foreach (var matchup in round)
+            foreach (var matchup in round.Matchups)
             {
                 var param = new DynamicParameters();
                 param.Add("@TournamentId", tournament.Id);

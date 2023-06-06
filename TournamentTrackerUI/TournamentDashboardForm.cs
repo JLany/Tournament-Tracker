@@ -32,12 +32,19 @@ namespace TournamentTrackerUI
 
         private void CreateTournamentButton_Click(object? sender, EventArgs e)
         {
-            new CreateTournamentForm(this).Show();
+            var form = new CreateTournamentForm();
+            form.Show();
         }
 
         private void LoadTournamentButton_Click(object? sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            var tournament = (TournamentModel)selectTournamentComboBox.SelectedItem;
+
+            if (null != tournament)
+            {
+                var form = new TournamentViewerForm(tournament);
+                form.Show();
+            }
         }
 
         private void WireUpTournamentsList()

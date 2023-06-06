@@ -26,7 +26,7 @@ namespace TournamentTrackerLibrary
             CreateOtherRounds(tournament, nRounds);
         }
 
-        private static List<MatchupModel> CreateFirstRound(List<TeamModel> teams, int nByes)
+        private static Round CreateFirstRound(List<TeamModel> teams, int nByes)
         {
             var matchups = new List<MatchupModel>();
             var matchup = new MatchupModel();
@@ -47,7 +47,7 @@ namespace TournamentTrackerLibrary
                 }
             }
 
-            return matchups;
+            return new Round { Matchups = matchups };
         }
 
         private static void CreateOtherRounds(TournamentModel tournament,  int nRounds)
@@ -56,10 +56,10 @@ namespace TournamentTrackerLibrary
             for (int round = 1; round < nRounds; ++round)
             {
                 var previousRound = tournament.Rounds[round - 1];
-                var thisRound = new List<MatchupModel>();
+                var thisRound = new Round();
                 var matchup = new MatchupModel();
 
-                foreach (var parentMatchup in previousRound)
+                foreach (var parentMatchup in previousRound.Matchups)
                 {
                     matchup.Entries.Add(new MatchupEntryModel { ParentMatchup = parentMatchup });
 
@@ -67,7 +67,7 @@ namespace TournamentTrackerLibrary
                     {
                         matchup.MatchupRound = round + 1; // round is zero based, so we add 1
 
-                        thisRound.Add(matchup);
+                        thisRound.Matchups.Add(matchup);
 
                         matchup = new MatchupModel();
                     }

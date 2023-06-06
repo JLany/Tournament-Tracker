@@ -11,12 +11,11 @@ public partial class CreateTournamentForm : Form, IPrizeRequester, ITeamRequeste
     private readonly List<PrizeModel> selectedPrizes = new();
     private readonly ITournamentRequester clientProcess;
 
-    public CreateTournamentForm(ITournamentRequester client)
+    public CreateTournamentForm()
     {
         InitializeComponent();
 
         // Set up 
-        clientProcess = client;
         WireUpLists();
 
         // Event handlers
@@ -88,7 +87,7 @@ public partial class CreateTournamentForm : Form, IPrizeRequester, ITeamRequeste
 
         GlobalConfig.Connector.CreateTournament(tournament);
 
-        clientProcess.ReceiveTournament(tournament);
+
 
         this.Close();
     }

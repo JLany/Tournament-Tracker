@@ -209,7 +209,7 @@ public static class TextFileConnectorProcessor
                     matchups.Add(allMatchups.Where(m => m.Id == int.Parse(id)).First());
                 }
 
-                tournament.Rounds.Add(matchups);
+                tournament.Rounds.Add(new Round { Matchups = matchups });
             }
 
             tournaments.Add(tournament);
@@ -326,7 +326,7 @@ public static class TextFileConnectorProcessor
         allMatchupEntries.SaveToMatchupEntryFile();
     }
 
-    private static void CreateMatchups(this List<MatchupModel> matchups)
+    private static void CreateMatchups(this Round round)
     {
         var allMatchups = 
             GlobalConfig.MatchupFile
@@ -341,7 +341,7 @@ public static class TextFileConnectorProcessor
             currentId = allMatchups.OrderByDescending(t => t.Id).First().Id + 1;
         }
 
-        foreach (var matchup in matchups)
+        foreach (var matchup in round.Matchups)
         {
             matchup.Id = currentId++;
             allMatchups.Add(matchup);
@@ -354,7 +354,7 @@ public static class TextFileConnectorProcessor
 
     public static void SaveRounds(this TournamentModel tournament)
     {
-        foreach (List<MatchupModel> round in tournament.Rounds)
+        foreach (var round in tournament.Rounds)
         {
             round.CreateMatchups();
         }
@@ -434,10 +434,16 @@ public static class TextFileConnectorProcessor
 
         foreach (TournamentModel t in tournaments)
         {
+            var rounds = new List<List<MatchupModel>>();
+            foreach (var round in t.Rounds)
+            {
+                rounds.Add(round.Matchups);
+            }
+
             string line = $"{t.Id},{t.TournamentName},{t.EntryFee},{1}" +
                 $",{t.EnteredTeams.ConvertIdsToString('|')}" +
                 $",{t.Prizes.ConvertIdsToString('|')}" +
-                $",{t.Rounds.ConvertIdsToString('|')}";
+                $",{rounds.ConvertIdsToString('|')}";
 
             lines.Add(line);
         }
