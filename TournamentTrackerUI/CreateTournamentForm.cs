@@ -9,7 +9,6 @@ public partial class CreateTournamentForm : Form, IPrizeRequester, ITeamRequeste
     private readonly List<TeamModel> availableTeams = GlobalConfig.Connector.GetTeam_All();
     private readonly List<TeamModel> selectedTeams = new();
     private readonly List<PrizeModel> selectedPrizes = new();
-    private readonly ITournamentRequester clientProcess;
 
     public CreateTournamentForm()
     {

@@ -132,13 +132,13 @@ public static class TextFileConnectorProcessor
         return prizes;
     }
 
-    public static List<TeamModel> ConvertToTeamModels(this List<string> lines, string personFileName)
+    public static List<TeamModel> ConvertToTeamModels(this List<string> lines)
     {
         // {id,name,list of members' ids}
         // 17,Eagels,14|5|17|18
 
         var teams = new List<TeamModel>();
-        var persons = personFileName.FullFilePath().LoadFile().ConvertToPersonModels();
+        var persons = GlobalConfig.PersonFile.FullFilePath().LoadFile().ConvertToPersonModels();
 
         foreach (var line in lines)
         {
@@ -169,7 +169,7 @@ public static class TextFileConnectorProcessor
     {
         var tournaments = new List<TournamentModel>();
         var allMatchups = GlobalConfig.MatchupFile.FullFilePath().LoadFile().ConvertToMatchupModels();
-        var allTeams = GlobalConfig.TeamFile.FullFilePath().LoadFile().ConvertToTeamModels(GlobalConfig.PersonFile);
+        var allTeams = GlobalConfig.TeamFile.FullFilePath().LoadFile().ConvertToTeamModels();
         var allPrizes = GlobalConfig.PrizeFile.FullFilePath().LoadFile().ConvertToPrizeModels();
 
         foreach (var line in lines)
@@ -293,7 +293,7 @@ public static class TextFileConnectorProcessor
             GlobalConfig.TeamFile
             .FullFilePath()
             .LoadFile()
-            .ConvertToTeamModels(GlobalConfig.PersonFile);
+            .ConvertToTeamModels();
 
             // This way it will blow up on any string other than { "", "<number>" }
             return teams.Where(t => t.Id == int.Parse(id)).First();
@@ -413,7 +413,7 @@ public static class TextFileConnectorProcessor
         File.WriteAllLines(GlobalConfig.MatchupFile.FullFilePath(), lines);
     }
 
-    public static void SaveToTeamFile(this List<TeamModel> teams, string fileName)
+    public static void SaveToTeamFile(this List<TeamModel> teams)
     {
         var lines = new List<string>();
 
@@ -423,11 +423,10 @@ public static class TextFileConnectorProcessor
             lines.Add(line);
         }
 
-        File.WriteAllLines(fileName.FullFilePath(), lines);
+        File.WriteAllLines(GlobalConfig.TeamFile.FullFilePath(), lines);
     }
 
-    public static void SaveToTournamentFile(this List<TournamentModel> tournaments
-        , string fileName)
+    public static void SaveToTournamentFile(this List<TournamentModel> tournaments)
     {
         // {id,name,entryFee,active,list of teams' ids,list of prizes' ids,list of rounds' ids}
         // {15,CHAMPS,120,1,5|65|41|17|6,7|3|55|23,6^3^12|8^2|8^1
@@ -450,7 +449,7 @@ public static class TextFileConnectorProcessor
             lines.Add(line);
         }
 
-        File.WriteAllLines(fileName.FullFilePath(), lines);
+        File.WriteAllLines(GlobalConfig.TournamentFile.FullFilePath(), lines);
     }
 
     private static void UpdateMatchupEntries(this List<MatchupEntryModel> matchupEntries)

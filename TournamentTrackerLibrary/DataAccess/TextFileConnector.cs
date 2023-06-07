@@ -7,13 +7,6 @@ public class TextFileConnector : IDataConnector
 {
     // TODO - (OPTIONAL) Take a look at AutoMapper, useful to learn
 
-    private const string PersonFile = "PersonModels.csv";
-    private const string PrizeFile = "PrizeModels.csv";
-    private const string TeamFile = "TeamModels.csv";
-    private const string TournamentFile = "TournamentModels.csv";
-    private const string MatchupFile = "MatchupModels.csv";
-    private const string MatchupEntryFile = "MatchupEntryModels.csv";
-
     public void CreatePerson(PersonModel person)
     {
         // Load text file contents and convert them to List<PrizeModel>
@@ -34,13 +27,13 @@ public class TextFileConnector : IDataConnector
         persons.Add(person);
 
         // Convert prizes list to List<string> and save text to the text file
-        persons.SaveToModelFile(PersonFile);
+        persons.SaveToModelFile(GlobalConfig.PersonFile);
     }
 
     public void CreatePrize(PrizeModel prize)
     {
         // Load text file contents and convert them to List<PrizeModel>
-        var prizes = PrizeFile.FullFilePath().LoadFile().ConvertToPrizeModels();
+        var prizes = GlobalConfig.PrizeFile.FullFilePath().LoadFile().ConvertToPrizeModels();
 
         // Find the max Id 
         int currentId = 1;
@@ -57,13 +50,13 @@ public class TextFileConnector : IDataConnector
         prizes.Add(prize);
 
         // Convert prizes list to List<string> and save text to the text file
-        prizes.SaveToModelFile(PrizeFile);
+        prizes.SaveToModelFile(GlobalConfig.TeamFile);
     }
 
-    public void CreateTeam(TeamModel team)
+    public void CreateTeam(TeamModel team)  
     {
         // Load all teams from teams text file
-        var teams = TeamFile.FullFilePath().LoadFile().ConvertToTeamModels(PersonFile);
+        var teams = GlobalConfig.TeamFile.FullFilePath().LoadFile().ConvertToTeamModels();
 
         // Find the max Id
         int currentId = 1;
@@ -80,13 +73,13 @@ public class TextFileConnector : IDataConnector
         teams.Add(team);
 
         // Convert to list of string, and save to file
-        teams.SaveToTeamFile(TeamFile);
+        teams.SaveToTeamFile();
     }
 
     public void CreateTournament(TournamentModel tournament)
     {
         var tournaments =
-            TournamentFile
+            GlobalConfig.TournamentFile
             .FullFilePath()
             .LoadFile()
             .ConvertToTournamentModels();
@@ -104,17 +97,17 @@ public class TextFileConnector : IDataConnector
 
         tournaments.Add(tournament);
 
-        tournaments.SaveToTournamentFile(TournamentFile);
+        tournaments.SaveToTournamentFile();
     }
 
     public List<PersonModel> GetPerson_All()
     {
-        return PersonFile.FullFilePath().LoadFile().ConvertToPersonModels();
+        return GlobalConfig.PersonFile.FullFilePath().LoadFile().ConvertToPersonModels();
     }
 
     public List<TeamModel> GetTeam_All()
     {
-        return TeamFile.FullFilePath().LoadFile().ConvertToTeamModels(PersonFile);
+        return GlobalConfig.TeamFile.FullFilePath().LoadFile().ConvertToTeamModels();
     }
 
     public List<TournamentModel> GetTournament_All()
