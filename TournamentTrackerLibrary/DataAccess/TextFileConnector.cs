@@ -14,7 +14,7 @@ public class TextFileConnector : IDataConnector
     private const string MatchupFile = "MatchupModels.csv";
     private const string MatchupEntryFile = "MatchupEntryModels.csv";
 
-    public PersonModel CreatePerson(PersonModel person)
+    public void CreatePerson(PersonModel person)
     {
         // Load text file contents and convert them to List<PrizeModel>
         var persons = GetPerson_All();
@@ -35,11 +35,9 @@ public class TextFileConnector : IDataConnector
 
         // Convert prizes list to List<string> and save text to the text file
         persons.SaveToModelFile(PersonFile);
-
-        return person;
     }
 
-    public PrizeModel CreatePrize(PrizeModel prize)
+    public void CreatePrize(PrizeModel prize)
     {
         // Load text file contents and convert them to List<PrizeModel>
         var prizes = PrizeFile.FullFilePath().LoadFile().ConvertToPrizeModels();
@@ -60,11 +58,9 @@ public class TextFileConnector : IDataConnector
 
         // Convert prizes list to List<string> and save text to the text file
         prizes.SaveToModelFile(PrizeFile);
-
-        return prize;
     }
 
-    public TeamModel CreateTeam(TeamModel team)
+    public void CreateTeam(TeamModel team)
     {
         // Load all teams from teams text file
         var teams = TeamFile.FullFilePath().LoadFile().ConvertToTeamModels(PersonFile);
@@ -85,11 +81,9 @@ public class TextFileConnector : IDataConnector
 
         // Convert to list of string, and save to file
         teams.SaveToTeamFile(TeamFile);
-
-        return team;
     }
 
-    public TournamentModel CreateTournament(TournamentModel tournament)
+    public void CreateTournament(TournamentModel tournament)
     {
         var tournaments =
             TournamentFile
@@ -111,8 +105,6 @@ public class TextFileConnector : IDataConnector
         tournaments.Add(tournament);
 
         tournaments.SaveToTournamentFile(TournamentFile);
-
-        return tournament;
     }
 
     public List<PersonModel> GetPerson_All()
@@ -134,9 +126,8 @@ public class TextFileConnector : IDataConnector
             .ConvertToTournamentModels();
     }
 
-    public MatchupModel UpdateMatchup(MatchupModel matchup)
+    public void UpdateMatchup(MatchupModel matchup)
     {
         matchup.UpdateMatchup();
-        return matchup;
     }
 }
