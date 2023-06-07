@@ -80,7 +80,7 @@
             // roundComboBox
             // 
             roundComboBox.FormattingEnabled = true;
-            roundComboBox.Location = new Point(127, 130);
+            roundComboBox.Location = new Point(127, 134);
             roundComboBox.Name = "roundComboBox";
             roundComboBox.Size = new Size(260, 38);
             roundComboBox.TabIndex = 3;
@@ -90,7 +90,7 @@
             unplayedOnlyCheckBox.AutoSize = true;
             unplayedOnlyCheckBox.Font = new Font("Segoe UI", 20.25F, FontStyle.Regular, GraphicsUnit.Point);
             unplayedOnlyCheckBox.ForeColor = SystemColors.MenuHighlight;
-            unplayedOnlyCheckBox.Location = new Point(127, 174);
+            unplayedOnlyCheckBox.Location = new Point(127, 177);
             unplayedOnlyCheckBox.Name = "unplayedOnlyCheckBox";
             unplayedOnlyCheckBox.Size = new Size(212, 41);
             unplayedOnlyCheckBox.TabIndex = 4;

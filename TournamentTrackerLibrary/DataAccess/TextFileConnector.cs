@@ -133,4 +133,10 @@ public class TextFileConnector : IDataConnector
             .LoadFile()
             .ConvertToTournamentModels();
     }
+
+    public MatchupModel UpdateMatchup(MatchupModel matchup)
+    {
+        matchup.UpdateMatchup();
+        return matchup;
+    }
 }

@@ -59,7 +59,9 @@ public static class SqlServerConnectorHelper
         , TournamentModel tournament)
     {
         int roundsCount = TournamentLogic.NumberOfRounds(tournament.EnteredTeams.Count);
-        var rounds = Enumerable.Repeat(new Round(), roundsCount).ToList();
+        var rounds = new List<Round>(roundsCount);
+        for (int i = 0; i < roundsCount; i++)
+            rounds.Add(new Round());
 
         var param = new DynamicParameters();
         param.Add("@TournamentId", tournament.Id);

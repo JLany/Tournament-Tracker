@@ -11,5 +11,6 @@ namespace TournamentTrackerLibrary.DataAccess
         List<PersonModel> GetPerson_All();
         List<TeamModel> GetTeam_All();
         List<TournamentModel> GetTournament_All();
+        MatchupModel UpdateMatchup(MatchupModel model);
     }
 }

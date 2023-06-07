@@ -7,7 +7,7 @@ namespace TournamentTrackerLibrary
     {
         public static IDataConnector Connector { get; private set; }
 
-        public static bool InitializeConnection(DataConnectionType dataConnction)
+        public static bool InitializeDataConnector(DataConnectionType dataConnction)
         {
             switch (dataConnction)
             {

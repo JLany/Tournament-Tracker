@@ -14,10 +14,9 @@ namespace TournamentTrackerUI
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
 
-            TournamentTrackerLibrary.GlobalConfig.InitializeConnection(DataConnectionType.TextFile);
+            TournamentTrackerLibrary.GlobalConfig.InitializeDataConnector(DataConnectionType.SqlServer);
 
             Application.Run(new TournamentDashboardForm());
-            // Application.Run(new TournamentDashboardForm());
         }
     }
 }
