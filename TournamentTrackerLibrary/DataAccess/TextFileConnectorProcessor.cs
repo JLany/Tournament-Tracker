@@ -1,4 +1,5 @@
 ﻿using System.Configuration;
+using System.Text;
 using System.Text.RegularExpressions;
 using TournamentTrackerLibrary.Models;
 
@@ -450,6 +451,40 @@ public static class TextFileConnectorProcessor
         }
 
         File.WriteAllLines(fileName.FullFilePath(), lines);
+    }
+
+    private static void UpdateMatchupEntries(this List<MatchupEntryModel> matchupEntries)
+    {
+        var allMatchupEntries =
+            GlobalConfig.MatchupEntryFile
+            .FullFilePath()
+            .LoadFile()
+            .ConvertToMatchupEntryModels();
+
+        foreach (MatchupEntryModel entry in matchupEntries)
+        {
+            var index = allMatchupEntries.FindIndex(m => m.Id == entry.Id);
+            allMatchupEntries[index] = entry;
+        }
+
+        allMatchupEntries.SaveToMatchupEntryFile();
+    }
+
+    public static void UpdateMatchup(this MatchupModel matchup)
+    {
+        var allMatchups =
+            GlobalConfig.MatchupFile
+            .FullFilePath()
+            .LoadFile()
+            .ConvertToMatchupModels();
+
+        var index = allMatchups.FindIndex(m => m.Id == matchup.Id);
+        allMatchups[index] = matchup;
+
+        // Update Entries
+        matchup.Entries.UpdateMatchupEntries();
+
+        allMatchups.SaveToMatchupFile();
     }
 
     /// <summary>
