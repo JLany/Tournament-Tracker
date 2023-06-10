@@ -24,14 +24,35 @@ public static class TournamentLogic
 
         // Create latter rounds (8 matchups, 4 matchups, 2 matchups, 1 matchup)
         CreateOtherRounds(tournament, nRounds);
+
+        tournament.PlayByeWeeks();
+    }
+
+    private static void PlayByeWeeks(this TournamentModel tournament)
+    {
+        Round roundOne = tournament.Rounds.First();
+
+        // Find bye week matchups, and mark team competing at them as the winner.
+        foreach (var matchup in roundOne.Matchups.Where(m => m.Entries.Count == 1))
+        {
+            matchup.Winner = matchup.Entries.First().TeamCompeting;
+            QualifyWinnerToNextRound(tournament, matchup);
+
+            GlobalConfig.Connector.UpdateMatchup(matchup);
+        }
     }
 
     public static void UpdateTournamentResults(TournamentModel tournament)
     {
         foreach (var round in  tournament.Rounds)
         {
-            foreach (var matchup in round.Matchups.Where(m => m.Winner == null))
+            var matchupsToScore = round.Matchups.Where(m => m.Winner == null);
+
+            foreach (var matchup in matchupsToScore)
             {
+                if (matchup.Entries.First().Score == 0 && matchup.Entries.ElementAt(1).Score == 0)
+                    continue;
+
                 LogWinner(matchup);
                 QualifyWinnerToNextRound(tournament, matchup);
                 GlobalConfig.Connector.UpdateMatchup(matchup);
@@ -41,16 +62,17 @@ public static class TournamentLogic
 
     public static void LogWinner(MatchupModel matchup)
     {
+        // It is now guarnteed that there are two entries in matchup, thanks to PlayByeWeeks.
+
         // TODO - (OPTIONAL) Try to do better
         MatchupEntryModel teamOneEntry = matchup.Entries.ElementAt(0);
-        MatchupEntryModel? teamTwoEntry = matchup.Entries.ElementAtOrDefault(1);
+        MatchupEntryModel teamTwoEntry = matchup.Entries.ElementAt(1);
 
-
-        if (teamOneEntry.Score > (teamTwoEntry?.Score ?? 0))
+        if (teamOneEntry.Score > teamTwoEntry.Score)
         {
             matchup.Winner = teamOneEntry.TeamCompeting;
         }
-        else if ((teamTwoEntry?.Score ?? 0) > teamOneEntry.Score)
+        else if (teamTwoEntry.Score > teamOneEntry.Score)
         {
             matchup.Winner = teamTwoEntry.TeamCompeting;
         }
@@ -64,20 +86,18 @@ public static class TournamentLogic
 
     private static void QualifyWinnerToNextRound(TournamentModel tournament, MatchupModel matchup)
     {
-        tournament.Rounds.ForEach(round =>
+        // Rounds are zero based, and MatchupRound is one based, so no need to add 1.
+        tournament.Rounds.ElementAt(matchup.MatchupRound).Matchups.ForEach(m =>
         {
-            foreach (var m in round.Matchups)
+            foreach (var entry in m.Entries)
             {
-                foreach (var entry in m.Entries)
+                if (entry.ParentMatchup?.Id == matchup.Id)
                 {
-                    if (entry.ParentMatchup?.Id == matchup.Id)
-                    {
-                        entry.TeamCompeting = matchup.Winner;
-                        //GlobalConfig.Connector.UpdateMatchup(m);
-                        return;
-                    }
+                    entry.TeamCompeting = matchup.Winner;
+                    GlobalConfig.Connector.UpdateMatchup(m);
                 }
             }
+            
         });
     }
 
@@ -100,7 +120,7 @@ public static class TournamentLogic
                 if (nByes > 0)
                 {
                     // Cheat for this team to be winner right away, because it's a bye week.
-                    matchup.Entries.First().Score = 1;
+                    //matchup.Entries.First().Score = 1;
                     --nByes;
                 }
 
@@ -126,7 +146,8 @@ public static class TournamentLogic
 
                 if (matchup.Entries.Count > 1)
                 {
-                    matchup.MatchupRound = round + 1; // round is zero based, so we add 1
+                    // round is zero based, so we add 1.
+                    matchup.MatchupRound = round + 1; 
 
                     thisRound.Matchups.Add(matchup);
 
