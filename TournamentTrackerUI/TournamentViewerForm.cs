@@ -122,6 +122,7 @@ public partial class TournamentViewerForm : Form
         }
 
         LogScores();
+
         TournamentLogic.UpdateTournamentResults(tournament);
 
         WireUpMatchupList();
