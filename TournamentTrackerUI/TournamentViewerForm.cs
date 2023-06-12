@@ -121,11 +121,13 @@ public partial class TournamentViewerForm : Form
         }
 
         var currentMatchup = (MatchupModel)matchupListBox.SelectedItem;
+        var teamOneScoreValue = double.Parse(teamOneScoreTextBox.Text);
+        var teamTwoScoreValue = double.Parse(teamTwoScoreTextBox.Text);
 
         //LogScores(currentMatchup);
-        LogScores(currentMatchup);
 
-        TournamentLogic.UpdateMatchupResult(tournament, currentMatchup);
+        TournamentLogic.UpdateMatchupResult(tournament, currentMatchup
+            , teamOneScoreValue, teamTwoScoreValue);
 
         WireUpMatchupList();
     }

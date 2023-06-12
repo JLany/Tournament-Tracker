@@ -74,9 +74,11 @@ public static class TournamentLogic
         }
     }
 
-    public static void UpdateMatchupResult(TournamentModel tournament, MatchupModel matchup)
+    public static void UpdateMatchupResult(TournamentModel tournament, MatchupModel matchup
+        , double teamOneScore, double teamTwoScore)
     {
-
+        matchup.Entries.ElementAt(0).Score = teamOneScore;
+        matchup.Entries.ElementAt(1).Score = teamTwoScore;
 
         //foreach (var round in  tournament.Rounds)
         //{
