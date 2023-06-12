@@ -26,6 +26,41 @@ public static class TournamentLogic
         CreateOtherRounds(tournament, nRounds);
     }
 
+    public static void LogWinner(MatchupModel matchup)
+    {
+        // It is now guarnteed that there are two entries in matchup, thanks to PlayByeWeeks.
+
+        // TODO - (OPTIONAL) Try to do better
+        //MatchupEntryModel teamOneEntry = matchup.Entries.First();
+        //MatchupEntryModel teamTwoEntry = matchup.Entries.ElementAtOrDefault(1);
+
+        //if (matchup.Entries.Count == 1)
+        //{
+        //    matchup.Winner = matchup.Entries.First().TeamCompeting;
+        //}
+        //else if (teamOneEntry.Score > teamTwoEntry.Score)
+        //{
+        //    matchup.Winner = teamOneEntry.TeamCompeting;
+        //}
+        //else if (teamTwoEntry.Score > teamOneEntry.Score)
+        //{
+        //    matchup.Winner = teamTwoEntry.TeamCompeting;
+        //}
+        //else
+        //{
+        //    throw new InvalidOperationException();
+        //}
+
+        matchup.Winner = DetermineWinner(matchup);
+
+        GlobalConfig.Connector.UpdateMatchup(matchup);
+    }
+
+    public static int NumberOfRounds(int teamCount)
+    {
+        return (int)Math.Ceiling(Math.Log2(teamCount));
+    }
+
     public static void PlayByeWeeks(this TournamentModel tournament)
     {
         Round roundOne = tournament.Rounds.First();
@@ -39,49 +74,31 @@ public static class TournamentLogic
         }
     }
 
-    public static void UpdateTournamentResults(TournamentModel tournament)
+    public static void UpdateMatchupResult(TournamentModel tournament, MatchupModel matchup)
     {
-        foreach (var round in  tournament.Rounds)
-        {
-            var matchupsToScore = round.Matchups
-                .Where(m => m.Winner == null)
-                .Where(m => !(m.Entries.ElementAt(0).Score == 0 && m.Entries.ElementAt(1).Score == 0));
 
-            foreach (var matchup in matchupsToScore)
-            {
+
+        //foreach (var round in  tournament.Rounds)
+        //{
+        //    var matchupsToScore = round.Matchups
+        //        .Where(m => m.Entries.Count == 2)
+        //        .Where(m => !(m.Entries.ElementAt(0).Score == 0 && m.Entries.ElementAt(1).Score == 0));
+
+        //    foreach (var matchup in matchupsToScore)
+            //{
                 LogWinner(matchup);
-                GlobalConfig.Connector.UpdateMatchup(matchup);
                 QualifyWinnerToNextRound(tournament, matchup);
-            }
-        }
+            //}
+        //}
     }
 
-    public static void LogWinner(MatchupModel matchup)
+    private static TeamModel DetermineWinner(MatchupModel matchup)
     {
-        // It is now guarnteed that there are two entries in matchup, thanks to PlayByeWeeks.
-
-        // TODO - (OPTIONAL) Try to do better
-        MatchupEntryModel teamOneEntry = matchup.Entries.First();
-        MatchupEntryModel teamTwoEntry = matchup.Entries.ElementAtOrDefault(1);
-
-        if (matchup.Entries.Count == 1)
-        {
-            matchup.Winner = matchup.Entries.First().TeamCompeting;
-        }
-        else if (teamOneEntry.Score > teamTwoEntry.Score)
-        {
-            matchup.Winner = teamOneEntry.TeamCompeting;
-        }
-        else if (teamTwoEntry.Score > teamOneEntry.Score)
-        {
-            matchup.Winner = teamTwoEntry.TeamCompeting;
-        }
-        else
-        {
-            throw new InvalidOperationException();
-        }
-
-        //GlobalConfig.Connector.UpdateMatchup(matchup);
+        return GlobalConfig.ScoreComparator(
+            matchup.Entries.ElementAt(0),
+            matchup.Entries.ElementAt(1)
+            )
+            .TeamCompeting;
     }
 
     private static void QualifyWinnerToNextRound(TournamentModel tournament, MatchupModel matchup)
@@ -164,11 +181,6 @@ public static class TournamentLogic
     private static int NumberOfByes(int nRounds, int nTeams)
     {
         return (int)Math.Pow(2, nRounds) - nTeams;
-    }
-
-    public static int NumberOfRounds(int teamCount)
-    {
-        return (int)Math.Ceiling(Math.Log2(teamCount));
     }
 
     private static List<TeamModel> RandomizeTeams(List<TeamModel> teams)

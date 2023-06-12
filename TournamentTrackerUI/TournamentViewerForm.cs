@@ -54,9 +54,8 @@ public partial class TournamentViewerForm : Form
         teamTwoScoreLabel.Visible = visible;
     }
 
-    private void LogScores()
+    private void LogScores(MatchupModel currentMatchup)
     {
-        var currentMatchup = (MatchupModel)matchupListBox.SelectedItem;
         var teamOneScoreValue = double.Parse(teamOneScoreTextBox.Text);
         var teamTwoScoreValue = double.Parse(teamTwoScoreTextBox.Text);
 
@@ -121,9 +120,12 @@ public partial class TournamentViewerForm : Form
             return;
         }
 
-        LogScores();
+        var currentMatchup = (MatchupModel)matchupListBox.SelectedItem;
 
-        TournamentLogic.UpdateTournamentResults(tournament);
+        //LogScores(currentMatchup);
+        LogScores(currentMatchup);
+
+        TournamentLogic.UpdateMatchupResult(tournament, currentMatchup);
 
         WireUpMatchupList();
     }

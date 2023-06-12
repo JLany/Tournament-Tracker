@@ -14,7 +14,7 @@ public static class TextFileConnectorProcessor
     /// <param name="fileName"></param>
     /// <returns></returns>
     public static string FullFilePath(this string fileName)
-        => $@"{ConfigurationManager.AppSettings["textFilesDirectory"]}\{fileName}";
+        => $@"{GlobalConfig.GetTextFilesDir()}\{fileName}";
 
     /// <summary>
     /// Loads file contents into a <see cref="List{string}"/> of <see cref="string"/>.
