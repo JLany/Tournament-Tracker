@@ -86,7 +86,7 @@ public partial class CreateTournamentForm : Form, IPrizeRequester, ITeamRequeste
 
         GlobalConfig.Connector.CreateTournament(tournament);
 
-
+        tournament.PlayByeWeeks();
 
         this.Close();
     }

@@ -54,25 +54,24 @@ public partial class TournamentViewerForm : Form
         teamTwoScoreLabel.Visible = visible;
     }
 
-    private void LogScores()
+    private void LogScores(MatchupModel currentMatchup)
     {
-        var currentMatchup = (MatchupModel)matchupListBox.SelectedItem;
         var teamOneScoreValue = double.Parse(teamOneScoreTextBox.Text);
         var teamTwoScoreValue = double.Parse(teamTwoScoreTextBox.Text);
 
         // TODO - (OPTIONAL) Try to do better
-        if (teamOneScoreValue > teamTwoScoreValue)
-        {
-            currentMatchup.Winner = currentMatchup.Entries.ElementAtOrDefault(0)?.TeamCompeting;
-        }
-        else if (teamTwoScoreValue > teamOneScoreValue)
-        {
-            currentMatchup.Winner = currentMatchup.Entries.ElementAtOrDefault(1)?.TeamCompeting;
-        }
-        else
-        {
-            throw new InvalidOperationException();
-        }
+        //if (teamOneScoreValue > teamTwoScoreValue)
+        //{
+        //    currentMatchup.Winner = currentMatchup.Entries.ElementAtOrDefault(0)?.TeamCompeting;
+        //}
+        //else if (teamTwoScoreValue > teamOneScoreValue)
+        //{
+        //    currentMatchup.Winner = currentMatchup.Entries.ElementAtOrDefault(1)?.TeamCompeting;
+        //}
+        //else
+        //{
+        //    throw new InvalidOperationException();
+        //}
 
         double[] scores = new[] { teamOneScoreValue, teamTwoScoreValue };
         for (int team = 0; team < currentMatchup.Entries.Count; team++)
@@ -80,7 +79,7 @@ public partial class TournamentViewerForm : Form
             currentMatchup.Entries.ElementAt(team).Score = scores[team];
         }
 
-        GlobalConfig.Connector.UpdateMatchup(currentMatchup);
+        //GlobalConfig.Connector.UpdateMatchup(currentMatchup);
     }
 
     private void MatchupListBox_SelectedIndexChanged(object? sender, EventArgs e)
@@ -121,8 +120,15 @@ public partial class TournamentViewerForm : Form
             return;
         }
 
-        LogScores();
-        QualifyWinnerToNextRound();
+        var currentMatchup = (MatchupModel)matchupListBox.SelectedItem;
+        var teamOneScoreValue = double.Parse(teamOneScoreTextBox.Text);
+        var teamTwoScoreValue = double.Parse(teamTwoScoreTextBox.Text);
+
+        //LogScores(currentMatchup);
+
+        TournamentLogic.UpdateMatchupResult(tournament, currentMatchup
+            , teamOneScoreValue, teamTwoScoreValue);
+
         WireUpMatchupList();
     }
 
@@ -135,7 +141,7 @@ public partial class TournamentViewerForm : Form
     {
         // TODO - Implement scores validation
 
-        // Validate abscense of tie
+        // Verify abscense of a tie
 
         // Validate ...
 
