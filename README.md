@@ -10,6 +10,8 @@
 <br></br>
 ## Technology:
 - C#
+  + custom `delegate`s
+  + custom events
 - WinForms
 - MS SQL Server
 - Dapper
