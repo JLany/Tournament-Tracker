@@ -34,10 +34,14 @@ public static class TournamentLogic
         //MatchupEntryModel teamOneEntry = matchup.Entries.First();
         //MatchupEntryModel teamTwoEntry = matchup.Entries.ElementAtOrDefault(1);
 
-        //if (matchup.Entries.Count == 1)
-        //{
-        //    matchup.Winner = matchup.Entries.First().TeamCompeting;
-        //}
+        if (matchup.Entries.Count == 1)
+        {
+            matchup.Winner = matchup.Entries.First().TeamCompeting;
+        }
+        else
+        {
+            matchup.Winner = DetermineWinner(matchup);
+        }
         //else if (teamOneEntry.Score > teamTwoEntry.Score)
         //{
         //    matchup.Winner = teamOneEntry.TeamCompeting;
@@ -51,7 +55,6 @@ public static class TournamentLogic
         //    throw new InvalidOperationException();
         //}
 
-        matchup.Winner = DetermineWinner(matchup);
 
         GlobalConfig.Connector.UpdateMatchup(matchup);
     }

@@ -22,10 +22,8 @@ public partial class TournamentViewerForm : Form
         unplayedOnlyCheckBox.CheckedChanged += UnplayedOnlyCheckBox_CheckedChanged;
     }
 
-    private void CheckScoreTextBoxes()
-    {
-        DrawScores(visible: true);
-
+    private void DrawMatchupControls()
+    {        
         if (teamOneNameLabel.Text.Length == 0)
         {
             DrawScores(visible: false);
@@ -33,6 +31,14 @@ public partial class TournamentViewerForm : Form
         else if (teamTwoNameLabel.Text.Length == 0)
         {
             DrawScores(visible: false);
+        }
+        else if (matchupListBox.SelectedItem == null)
+        {
+            DrawScores(visible: false);
+        }
+        else
+        {
+            DrawScores(visible: true);
         }
     }
 
@@ -85,6 +91,7 @@ public partial class TournamentViewerForm : Form
     private void MatchupListBox_SelectedIndexChanged(object? sender, EventArgs e)
     {
         WireUpMatchupData();
+        DrawMatchupControls();
     }
 
     private void QualifyWinnerToNextRound()
@@ -126,6 +133,11 @@ public partial class TournamentViewerForm : Form
 
         //LogScores(currentMatchup);
 
+        if (currentMatchup == null)
+        {
+            return;
+        }
+
         TournamentLogic.UpdateMatchupResult(tournament, currentMatchup
             , teamOneScoreValue, teamTwoScoreValue);
 
@@ -151,7 +163,12 @@ public partial class TournamentViewerForm : Form
     private void WireUpFormData()
     {
         tournamentNameLabel.Text = tournament.TournamentName;
+
         WireUpRoundsList();
+
+        WireUpMatchupList();
+
+        DrawMatchupControls();
     }
 
     private void WireUpMatchupData()
@@ -168,8 +185,6 @@ public partial class TournamentViewerForm : Form
 
             teamTwoNameLabel.Text = secondEntry?.TeamCompeting?.TeamName;
             teamTwoScoreTextBox.Text = secondEntry?.Score.ToString();
-
-            CheckScoreTextBoxes();
         }
     }
 
@@ -196,7 +211,5 @@ public partial class TournamentViewerForm : Form
         roundComboBox.DataSource = null;
 
         roundComboBox.DataSource = tournament.Rounds;
-
-        WireUpMatchupList();
     }
 }
