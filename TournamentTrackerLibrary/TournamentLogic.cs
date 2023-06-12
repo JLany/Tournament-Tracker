@@ -77,6 +77,21 @@ public static class TournamentLogic
         }
     }
 
+    /// <summary>
+    /// Setup a <see cref="TournamentModel"/>'s initial state and store it to data storage.
+    /// <br></br>
+    /// Model must not be used before calling this method.
+    /// </summary>
+    /// <param name="tournament"></param>
+    public static void SetupTournament(TournamentModel tournament)
+    {
+        tournament.CreateRounds();
+
+        GlobalConfig.Connector.CreateTournament(tournament);
+
+        tournament.PlayByeWeeks();
+    }
+
     public static void UpdateMatchupResult(TournamentModel tournament, MatchupModel matchup
         , double teamOneScore, double teamTwoScore)
     {
