@@ -6,11 +6,11 @@ using TournamentTrackerLibrary.Models;
 
 namespace TournamentTrackerLibrary.DataAccess;
 
-public class SqlServerConnector : IDataConnector
+public class SqlServerConnector : DataConnectorBase
 {
     private const string DatabaseName = "Tournaments";
 
-    public void CreatePerson(PersonModel person)
+    public override void CreatePerson(PersonModel person)
     {
         using IDbConnection connection =
             new System.Data.SqlClient.SqlConnection(GlobalConfig.GetConnectionString(DatabaseName));
@@ -27,7 +27,7 @@ public class SqlServerConnector : IDataConnector
         person.Id = param.Get<int>("@Id");
     }
 
-    public void CreatePrize(PrizeModel prize)
+    public override void CreatePrize(PrizeModel prize)
     {
         using IDbConnection connection =
             new System.Data.SqlClient.SqlConnection(GlobalConfig.GetConnectionString(DatabaseName));
@@ -48,7 +48,7 @@ public class SqlServerConnector : IDataConnector
         prize.Id = param.Get<int>("@Id");
     }
 
-    public void CreateTeam(TeamModel team)
+    public override void CreateTeam(TeamModel team)
     {
         using IDbConnection connection =
             new System.Data.SqlClient.SqlConnection(GlobalConfig.GetConnectionString(DatabaseName));
@@ -73,7 +73,7 @@ public class SqlServerConnector : IDataConnector
         }
     }
 
-    public void CreateTournament(TournamentModel tournament)
+    protected override void CreateTournamentImpl(TournamentModel tournament)
     {
         using IDbConnection connection =
             new System.Data.SqlClient.SqlConnection(GlobalConfig.GetConnectionString(DatabaseName));
@@ -94,7 +94,7 @@ public class SqlServerConnector : IDataConnector
         connection.SaveTournamentRounds(tournament);
     }
 
-    public List<PersonModel> GetPerson_All()
+    public override List<PersonModel> GetPerson_All()
     {
         var output = new List<PersonModel>();
 
@@ -107,7 +107,7 @@ public class SqlServerConnector : IDataConnector
         return output;
     }
 
-    public List<TeamModel> GetTeam_All()
+    public override List<TeamModel> GetTeam_All()
     {
         List<TeamModel> output;
 
@@ -125,7 +125,7 @@ public class SqlServerConnector : IDataConnector
         return output;
     }
 
-    public List<TournamentModel> GetTournament_All()
+    public override List<TournamentModel> GetTournament_All()
     {
         List<TournamentModel> output;
 
@@ -152,7 +152,7 @@ public class SqlServerConnector : IDataConnector
         return output;
     }
 
-    public void UpdateMatchup(MatchupModel matchup)
+    public override void UpdateMatchup(MatchupModel matchup)
     {
         using IDbConnection connection =
             new System.Data.SqlClient.SqlConnection(GlobalConfig.GetConnectionString(DatabaseName));

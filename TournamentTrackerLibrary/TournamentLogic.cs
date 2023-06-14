@@ -87,8 +87,6 @@ public static class TournamentLogic
     {
         tournament.CreateRounds();
 
-        GlobalConfig.Connector.CreateTournament(tournament);
-
         tournament.PlayByeWeeks();
 
         tournament.RoundBeginningNotification();

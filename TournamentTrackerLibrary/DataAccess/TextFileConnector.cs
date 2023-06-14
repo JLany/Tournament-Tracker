@@ -3,11 +3,11 @@ using TournamentTrackerLibrary.Models;
 
 namespace TournamentTrackerLibrary.DataAccess;
 
-public class TextFileConnector : IDataConnector
+public class TextFileConnector : DataConnectorBase
 {
     // TODO - (OPTIONAL) Take a look at AutoMapper, useful to learn
 
-    public void CreatePerson(PersonModel person)
+    public override void CreatePerson(PersonModel person)
     {
         // Load text file contents and convert them to List<PrizeModel>
         var persons = GetPerson_All();
@@ -30,7 +30,7 @@ public class TextFileConnector : IDataConnector
         persons.SaveToModelFile(GlobalConfig.PersonFile);
     }
 
-    public void CreatePrize(PrizeModel prize)
+    public override void CreatePrize(PrizeModel prize)
     {
         // Load text file contents and convert them to List<PrizeModel>
         var prizes = GlobalConfig.PrizeFile.FullFilePath().LoadFile().ConvertToPrizeModels();
@@ -53,7 +53,7 @@ public class TextFileConnector : IDataConnector
         prizes.SaveToModelFile(GlobalConfig.TeamFile);
     }
 
-    public void CreateTeam(TeamModel team)  
+    public override void CreateTeam(TeamModel team)  
     {
         // Load all teams from teams text file
         var teams = GlobalConfig.TeamFile.FullFilePath().LoadFile().ConvertToTeamModels();
@@ -76,7 +76,31 @@ public class TextFileConnector : IDataConnector
         teams.SaveToTeamFile();
     }
 
-    public void CreateTournament(TournamentModel tournament)
+    public override List<PersonModel> GetPerson_All()
+    {
+        return GlobalConfig.PersonFile.FullFilePath().LoadFile().ConvertToPersonModels();
+    }
+
+    public override List<TeamModel> GetTeam_All()
+    {
+        return GlobalConfig.TeamFile.FullFilePath().LoadFile().ConvertToTeamModels();
+    }
+
+    public override List<TournamentModel> GetTournament_All()
+    {
+        return
+            GlobalConfig.TournamentFile
+            .FullFilePath()
+            .LoadFile()
+            .ConvertToTournamentModels();
+    }
+
+    public override void UpdateMatchup(MatchupModel matchup)
+    {
+        matchup.UpdateMatchup();
+    }
+
+    protected override void CreateTournamentImpl(TournamentModel tournament)
     {
         var tournaments =
             GlobalConfig.TournamentFile
@@ -98,29 +122,5 @@ public class TextFileConnector : IDataConnector
         tournaments.Add(tournament);
 
         tournaments.SaveToTournamentFile();
-    }
-
-    public List<PersonModel> GetPerson_All()
-    {
-        return GlobalConfig.PersonFile.FullFilePath().LoadFile().ConvertToPersonModels();
-    }
-
-    public List<TeamModel> GetTeam_All()
-    {
-        return GlobalConfig.TeamFile.FullFilePath().LoadFile().ConvertToTeamModels();
-    }
-
-    public List<TournamentModel> GetTournament_All()
-    {
-        return
-            GlobalConfig.TournamentFile
-            .FullFilePath()
-            .LoadFile()
-            .ConvertToTournamentModels();
-    }
-
-    public void UpdateMatchup(MatchupModel matchup)
-    {
-        matchup.UpdateMatchup();
     }
 }

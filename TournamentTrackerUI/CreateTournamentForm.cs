@@ -82,7 +82,7 @@ public partial class CreateTournamentForm : Form, IPrizeRequester, ITeamRequeste
             Prizes = selectedPrizes
         };
 
-        TournamentLogic.SetupTournament(tournament);
+        GlobalConfig.Connector.CreateTournament(tournament);
 
         this.Close();
     }
