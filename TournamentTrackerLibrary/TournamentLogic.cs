@@ -90,6 +90,8 @@ public static class TournamentLogic
         GlobalConfig.Connector.CreateTournament(tournament);
 
         tournament.PlayByeWeeks();
+
+        tournament.RoundBeginningNotification();
     }
 
     public static void UpdateMatchupResult(TournamentModel tournament, MatchupModel matchup
@@ -98,18 +100,63 @@ public static class TournamentLogic
         matchup.Entries.ElementAt(0).Score = teamOneScore;
         matchup.Entries.ElementAt(1).Score = teamTwoScore;
 
-        //foreach (var round in  tournament.Rounds)
-        //{
-        //    var matchupsToScore = round.Matchups
-        //        .Where(m => m.Entries.Count == 2)
-        //        .Where(m => !(m.Entries.ElementAt(0).Score == 0 && m.Entries.ElementAt(1).Score == 0));
+        int currentRound = tournament.CurrentRound;
 
-        //    foreach (var matchup in matchupsToScore)
-            //{
-                LogWinner(matchup);
-                QualifyWinnerToNextRound(tournament, matchup);
-            //}
-        //}
+        LogWinner(matchup);
+        QualifyWinnerToNextRound(tournament, matchup);
+
+        if (currentRound < tournament.CurrentRound)
+        {
+            tournament.RoundBeginningNotification();
+        }
+    }
+
+    private static void RoundBeginningNotification(this TournamentModel tournament)
+    {
+        if (tournament.CurrentRound > tournament.Rounds.Count)
+        {
+            // Tournament has finished
+            return;
+        }
+
+        Round currentRound = tournament.Rounds
+            .Where(r => r.Matchups.First().MatchupRound == tournament.CurrentRound)
+            .First();
+
+        foreach (var matchup in currentRound.Matchups)
+        {
+            if (matchup.Entries.Count == 1)
+            {
+                continue;
+            }
+                
+            foreach (var entry in matchup.Entries)
+            {
+                foreach (var person in entry.TeamCompeting?.TeamMembers ?? new List<PersonModel>())
+                {
+                    RoundBeginningNotification(person, entry.TeamCompeting.TeamName
+                        , matchup.Entries.Where(e => e.Id != entry.Id).First());
+                }
+            }
+        }
+    }
+
+    private static void RoundBeginningNotification(PersonModel person, string teamName
+        , MatchupEntryModel competitor)
+    {
+        var sender = GlobalConfig.GetSenderEmailAddress();
+        var to = new List<string> { person.EmailAddress };
+        var subject = $"{teamName}: You have a new matchup against {competitor.TeamCompeting.TeamName}";
+        var body = new StringBuilder();
+
+        body.AppendLine("<h1>You have a new matchup</h1>");
+        body.Append("<p><strong>Competitor: </strong>");
+        body.AppendLine($"{competitor.TeamCompeting.TeamName}</p>");
+        body.AppendLine();
+        body.AppendLine("<br><br><p>Have a great time!</p>");
+        body.AppendLine("<br>~Tournament Tracker");
+
+        EmailLogic.SendEmail(to, subject, body.ToString());
     }
 
     private static TeamModel DetermineWinner(MatchupModel matchup)

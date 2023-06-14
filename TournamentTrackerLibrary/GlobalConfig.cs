@@ -38,6 +38,19 @@ namespace TournamentTrackerLibrary
             return ConfigurationManager.ConnectionStrings[name].ConnectionString;
         }
 
+        public static string GetSenderEmailAddress()
+            => ConfigurationManager.AppSettings["senderEmailAddress"];
+
+        public static string GetSenderEmailPassword()
+        {
+            return File
+                .ReadAllLines(ConfigurationManager.AppSettings["senderEmailPasswordFilePath"])
+                .First();
+        }
+
+        public static string GetSenderDisplayName()
+            => ConfigurationManager.AppSettings["senderDisplayName"];
+
         // This logic does not make any sense.
         // The predicate should depend on the tournament and be stored with the
         // tournament's data, rather than an app setting.

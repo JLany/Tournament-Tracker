@@ -14,11 +14,11 @@ namespace TournamentTrackerUI
         {
             InitializeComponent();
 
-            // set up
+            // Set up.
             this.clientProcess = clientProcess;
             WireUpLists();
 
-            // event handlers
+            // Event handlers.
             addMemberButton.Click += AddMemberButton_Click;
             createMemberButton.Click += CreateMemberButton_Click;
             createTeamButton.Click += CreateTeamButton_Click;
@@ -111,7 +111,8 @@ namespace TournamentTrackerUI
         private bool ValidateMemberForm()
         {
             // TODO - Enhance member form validation
-            // Add validation for length to avoid violating database constraints
+            // Add validation for length to avoid violating database constraints.
+            // Add email validation using EmailLogic.IsValidEmail
 
             // Do not use if statements on the same line in other cases, to facilitate debugging
             if (firstNameTextBox.Text.Length < 1) { return false; }

@@ -23,26 +23,29 @@ public partial class TournamentViewerForm : Form
     }
 
     private void DrawMatchupControls()
-    {        
+    {
+        bool scoresEnabled = tournament.CurrentRound 
+            == ((Round)roundComboBox.SelectedItem).Matchups.First().MatchupRound;
+
         if (teamOneNameLabel.Text.Length == 0)
         {
-            DrawScores(visible: false);
+            DrawScores(visible: false, scoresEnabled);
         }
         else if (teamTwoNameLabel.Text.Length == 0)
         {
-            DrawScores(visible: false);
+            DrawScores(visible: false, scoresEnabled);
         }
         else if (matchupListBox.SelectedItem == null)
         {
-            DrawScores(visible: false);
+            DrawScores(visible: false, scoresEnabled);
         }
         else
         {
-            DrawScores(visible: true);
+            DrawScores(visible: true, scoresEnabled);
         }
     }
 
-    private void DrawScores(bool visible)
+    private void DrawScores(bool visible, bool scoresEanabled)
     {
         //teamOneScoreTextBox.Text = "";
         //teamTwoScoreTextBox.Text = "";
@@ -54,7 +57,9 @@ public partial class TournamentViewerForm : Form
         teamTwoNameLabel.Visible = visible;
         scoreButton.Visible = visible;
         teamOneScoreTextBox.Visible = visible;
+        teamOneScoreTextBox.Enabled = scoresEanabled;
         teamTwoScoreTextBox.Visible = visible;
+        teamTwoScoreTextBox.Enabled = scoresEanabled;
         versusLabel.Visible = visible;
         teamOneScoreLabel.Visible = visible;
         teamTwoScoreLabel.Visible = visible;

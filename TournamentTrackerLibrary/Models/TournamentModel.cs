@@ -8,7 +8,18 @@
         public List<TeamModel> EnteredTeams { get; set; } = new();
         public List<PrizeModel> Prizes { get; set; } = new();
         public List<Round> Rounds { get; set; } = new();
-
+        /// <summary>
+        /// Current-active-round's number with not played matchups yet.
+        /// </summary>
+        public int CurrentRound
+        {
+            get
+            {
+                int output = 1;
+                Rounds.ForEach(r => { if (r.Matchups.All(m => m.Winner != null)) ++output; });
+                return output;
+            }
+        }
 
         public TournamentModel() { }
 
