@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TournamentTrackerLibrary.Models;
+using TournamentTrackerLibrary.Utility;
 
 namespace TournamentTrackerLibrary.DataAccess;
 

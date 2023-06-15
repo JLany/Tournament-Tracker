@@ -1,5 +1,6 @@
 using TournamentTrackerLibrary;
 using TournamentTrackerLibrary.Models;
+using TournamentTrackerLibrary.Utility;
 
 namespace TournamentTrackerUI;
 
@@ -168,13 +169,36 @@ public partial class TournamentViewerForm : Form
 
     private bool ValidateScores()
     {
-        // TODO - Implement scores validation
+        bool output = true;
 
-        // Verify abscense of a tie
+        // TODO - Show appropriate error messages on labels for each case.
 
-        // Validate ...
+        bool teamOneScoreValid = double.TryParse(teamOneScoreTextBox.Text, out double teamOneScoreValue) 
+            && teamOneScoreValue > 0;
+        bool teamTwoScoreValid = double.TryParse(teamTwoScoreTextBox.Text, out double teamTwoScoreValue)
+            && teamTwoScoreValue > 0;
 
-        return true;
+        if (!teamOneScoreValid)
+        {
+            output = false;
+        }
+
+        if (!teamTwoScoreValid)
+        {
+            output = false;
+        }
+
+        // Verify abscense of a tie.
+        if (teamOneScoreValid && teamTwoScoreValid)
+        {
+            // Cannot have a tie in the tournament.
+            if (teamOneScoreValue == teamTwoScoreValue)
+            {
+                output = false;
+            }
+        }
+
+        return output;
     }
 
     private void WireUpFormData()

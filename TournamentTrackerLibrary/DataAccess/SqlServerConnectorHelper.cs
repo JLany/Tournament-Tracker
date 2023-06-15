@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using System.Data;
 using TournamentTrackerLibrary.Models;
+using TournamentTrackerLibrary.Utility;
 
 namespace TournamentTrackerLibrary.DataAccess.SqlServerConnectorHelper;
 

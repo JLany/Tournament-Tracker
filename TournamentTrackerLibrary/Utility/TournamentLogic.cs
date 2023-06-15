@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TournamentTrackerLibrary.Models;
 
-namespace TournamentTrackerLibrary;
+namespace TournamentTrackerLibrary.Utility;
 
 public static class TournamentLogic
 {
@@ -83,7 +83,7 @@ public static class TournamentLogic
             if (nByes > 0 || matchup.Entries.Count > 1)
             {
                 // First round.
-                matchup.MatchupRound = 1; 
+                matchup.MatchupRound = 1;
                 matchups.Add(matchup);
 
                 matchup = new MatchupModel();
@@ -98,7 +98,7 @@ public static class TournamentLogic
         return new Round { Matchups = matchups };
     }
 
-    private static void CreateOtherRounds(TournamentModel tournament,  int nRounds)
+    private static void CreateOtherRounds(TournamentModel tournament, int nRounds)
     {
         // Asuming that first round is created and initialized
         for (int round = 1; round < nRounds; ++round)
@@ -114,7 +114,7 @@ public static class TournamentLogic
                 if (matchup.Entries.Count > 1)
                 {
                     // round is zero based, so we add 1.
-                    matchup.MatchupRound = round + 1; 
+                    matchup.MatchupRound = round + 1;
 
                     thisRound.Matchups.Add(matchup);
 
@@ -245,7 +245,7 @@ public static class TournamentLogic
 
     private static void RoundBeginningNotification(this TournamentModel tournament)
     {
-        Round currentRound = 
+        Round currentRound =
             tournament.Rounds
             .Where(r => r.Matchups.First().MatchupRound == tournament.CurrentRound)
             .First();
@@ -256,7 +256,7 @@ public static class TournamentLogic
             {
                 continue;
             }
-                
+
             foreach (var entry in matchup.Entries)
             {
                 foreach (var person in entry.TeamCompeting?.TeamMembers ?? new List<PersonModel>())
@@ -291,7 +291,7 @@ public static class TournamentLogic
         // handle other places. (e.g. play 3rd place determination matchup).
 
         TeamModel? firstPlace = tournament.Rounds.Last().Matchups.First().Winner;
-        TeamModel? secondPlace = 
+        TeamModel? secondPlace =
             tournament.Rounds
             .Last().Matchups
             .First().Entries
@@ -303,7 +303,7 @@ public static class TournamentLogic
             IEnumerable<PrizeModel> prizes = tournament.Prizes.OrderBy(p => p.PlaceNumber);
             decimal? firstPrize = prizes.ElementAtOrDefault(0)?.PrizeValue(tournament);
             decimal? secondPrize = prizes.ElementAtOrDefault(1)?.PrizeValue(tournament);
-            
+
 
 
             var subject = $"{tournament.TournamentName}: {firstPlace.TeamName} has won!";
@@ -317,7 +317,7 @@ public static class TournamentLogic
             {
                 body.AppendLine($"<p>{firstPlace.TeamName} will receive ${firstPrize}.</p>");
             }
-            
+
             if (secondPrize != null)
             {
                 body.AppendLine($"<p>{secondPlace.TeamName} will receive ${secondPrize}.</p>");

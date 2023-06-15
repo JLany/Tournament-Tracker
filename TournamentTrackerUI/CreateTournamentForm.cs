@@ -1,6 +1,7 @@
 ﻿using TournamentTrackerLibrary;
 using TournamentTrackerLibrary.InterCommunication;
 using TournamentTrackerLibrary.Models;
+using TournamentTrackerLibrary.Utility;
 
 namespace TournamentTrackerUI;
 
@@ -131,11 +132,46 @@ public partial class CreateTournamentForm : Form, IPrizeRequester, ITeamRequeste
         prizesListBox.DisplayMember = "PrizeSummary";
     }
 
-    // TODO - Implement validation for ALL names not to contain a comma (,)!
     private bool ValidateTournamentData()
     {
-        // TODO - Implement tournament data validation
+        bool output = true;
 
-        return true;
+        // TODO - Show appropriate error messages on labels for each case.
+
+        if (tournamentNameTextBox.Text.Length < 1 || tournamentNameTextBox.Text.Length > 100)
+        {
+            output = false;
+        }
+
+        if (!TournamentTrackerValidations.IsValidName(tournamentNameTextBox.Text))
+        {
+            output = false;
+        }
+
+        if (selectedTeams.Count < 1)
+        {
+            output = false;
+        }
+
+        if (selectedPrizes.Count > selectedTeams.Count)
+        {
+            output = false;
+        }
+
+        bool entryFeeValid = decimal.TryParse(entryFeeTextBox.Text, out decimal feeValue);
+
+        if (!entryFeeValid)
+        {
+            output = false;
+        }
+        else
+        {
+            if (feeValue < 0m)
+            {
+                output = false;
+            }
+        }
+
+        return output;
     }
 }

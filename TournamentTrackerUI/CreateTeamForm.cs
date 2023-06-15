@@ -1,6 +1,7 @@
 ﻿using TournamentTrackerLibrary;
 using TournamentTrackerLibrary.InterCommunication;
 using TournamentTrackerLibrary.Models;
+using TournamentTrackerLibrary.Utility;
 
 namespace TournamentTrackerUI
 {
@@ -42,7 +43,7 @@ namespace TournamentTrackerUI
         {
             if (!ValidateMemberForm())
             {
-                MessageBox.Show("You need to fill in all the fields to add a new member."
+                MessageBox.Show("You need to fill in all the fields with proper data to add a new member."
                     , "Invalid member data");
 
                 return;
@@ -110,31 +111,72 @@ namespace TournamentTrackerUI
 
         private bool ValidateMemberForm()
         {
-            // TODO - Enhance member form validation
-            // Add validation for length to avoid violating database constraints.
-            // Add email validation using EmailLogic.IsValidEmail
+            bool output = true;
+
+            // TODO - Show appropriate error messages on labels for each case.
 
             // Do not use if statements on the same line in other cases, to facilitate debugging
-            if (firstNameTextBox.Text.Length < 1) { return false; }
+            if (firstNameTextBox.Text.Length < 1 || firstNameTextBox.Text.Length > 50) 
+            { 
+                output = false;
+            }
 
-            if (lastNameTextBox.Text.Length < 1) { return false; }
+            if (!TournamentTrackerValidations.IsValidName(firstNameTextBox.Text))
+            {
+                output = false;
+            }
 
-            if (emailTextBox.Text.Length < 1) { return false; }
+            if (lastNameTextBox.Text.Length < 1 || lastNameTextBox.Text.Length > 50) 
+            { 
+                output = false;
+            }
 
-            if (phoneNumberTextBox.Text.Length < 1) { return false; }
+            if (!TournamentTrackerValidations.IsValidName(lastNameTextBox.Text))
+            {
+                output = false;
+            }
 
-            return true;
+            // Too long to store in database.
+            if (emailTextBox.Text.Length > 100) 
+            { 
+                output = false;
+            }
+
+            if (!TournamentTrackerValidations.IsValidEmail(emailTextBox.Text)) 
+            { 
+                output = false;
+            }
+
+            // Too long to store in database.
+            if (phoneNumberTextBox.Text.Length > 20) 
+            { 
+                output = false;
+            }
+
+            return output;
         }
 
         private bool ValidateTeamData()
         {
-            // TODO - Implement team data validation
+            // TODO - Show appropriate error messages on labels for each case.
+            bool output = true;
 
-            if (teamNameTextBox.Text.Length < 1) { return false; }
+            if (teamNameTextBox.Text.Length < 1 || teamNameTextBox.Text.Length > 100) 
+            { 
+                output = false;
+            }
 
-            if (selectedMembers.Count < 1) { return false; }
+            if (!TournamentTrackerValidations.IsValidName(teamNameTextBox.Text))
+            {
+                output = false;
+            }
 
-            return true;
+            if (selectedMembers.Count < 1) 
+            { 
+                output = false;
+            }
+
+            return output;
         }
 
         private void ResetMemberForm()

@@ -1,6 +1,7 @@
 ﻿using TournamentTrackerLibrary;
 using TournamentTrackerLibrary.Models;
 using TournamentTrackerLibrary.InterCommunication;
+using TournamentTrackerLibrary.Utility;
 
 namespace TournamentTrackerUI;
 
@@ -43,10 +44,11 @@ public partial class CreatePrizeForm : Form
     }
 
 
-    // TODO - Show appropriate error messages (e.g. on labels)
     private bool ValidateForm()
     {
         bool output = true;
+
+        // TODO - Show appropriate error messages on labels for each case.
 
         // check place number field
         if (int.TryParse(placeNumberTextBox.Text, out int placeNumberValue))
@@ -62,11 +64,12 @@ public partial class CreatePrizeForm : Form
         }
 
         // check place name field
-        if (placeNameTextBox.Text.Length == 0)
+        if (placeNameTextBox.Text.Length < 1 || placeNameTextBox.Text.Length > 100)
         {
             output = false;
         }
-        else if (placeNameTextBox.Text.Length > 100) // too long
+
+        if (!TournamentTrackerValidations.IsValidName(placeNameTextBox.Text))
         {
             output = false;
         }

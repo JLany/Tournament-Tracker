@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace TournamentTrackerLibrary;
+namespace TournamentTrackerLibrary.Utility;
 
 public static class EmailLogic
 {
@@ -24,7 +24,7 @@ public static class EmailLogic
         var senderMailAddress = new MailAddress(senderEmail, senderDisplayName);
 
         var mail = new MailMessage();
-        
+
         if (to.Length > 0)
         {
             mail.To.Add(to);
@@ -43,11 +43,5 @@ public static class EmailLogic
         };
 
         client.SendAsync(mail, null);
-    }
-
-    public static bool IsValidEmail(string email)
-    {
-        var validEmail = new Regex("^[\\w!#$%&'*+/=?^`{|}~-]+(\\.[\\w!#$%&'*+/=?^`{|}~-]+)*@(?:[\\w-]+\\.)+[a-zA-Z]{2,63}$");
-        return validEmail.IsMatch(email);
     }
 }
