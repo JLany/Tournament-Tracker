@@ -5,7 +5,30 @@ namespace TournamentTrackerLibrary.DataAccess;
 
 public class TextFileConnector : DataConnectorBase
 {
+
     // TODO - (OPTIONAL) Take a look at AutoMapper, useful to learn
+
+    public override void CompleteTournament(TournamentModel tournament)
+    {
+        List<string> tournaments =
+            GlobalConfig.TournamentFile
+            .FullFilePath()
+            .LoadFile();
+
+        for (int i = 0; i < tournaments.Count; i++)
+        {
+            string[] cols = tournaments[i].Split(',');
+
+            if (int.Parse(cols[0]) == tournament.Id)
+            {
+                cols[3] = "0";
+                tournaments[i] = cols.Aggregate((line, col) => line += col);
+                break;
+            }
+        }
+
+        File.WriteAllLines(GlobalConfig.TournamentFile.FullFilePath(), tournaments);
+    }
 
     public override void CreatePerson(PersonModel person)
     {

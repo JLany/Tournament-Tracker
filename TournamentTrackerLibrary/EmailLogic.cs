@@ -14,12 +14,23 @@ public static class EmailLogic
     private static readonly string senderDisplayName = GlobalConfig.GetSenderDisplayName();
     private static readonly string senderEmailPassword = GlobalConfig.GetSenderEmailPassword();
 
-    public static void SendEmail(List<string> to, string subject, string body)
+    public static void SendEmail(string to, string subject, string body)
+    {
+        SendEmail(to, new List<string>(), subject, body);
+    }
+
+    public static void SendEmail(string to, List<string> bcc, string subject, string body)
     {
         var senderMailAddress = new MailAddress(senderEmail, senderDisplayName);
 
         var mail = new MailMessage();
-        to.ForEach(x => mail.To.Add(x));
+        
+        if (to.Length > 0)
+        {
+            mail.To.Add(to);
+        }
+
+        bcc.ForEach(x => mail.Bcc.Add(x));
         mail.From = senderMailAddress;
         mail.Subject = subject;
         mail.Body = body;
@@ -32,8 +43,6 @@ public static class EmailLogic
         };
 
         client.SendAsync(mail, null);
-
-        // TODO - Implement actual mail sending.
     }
 
     public static bool IsValidEmail(string email)

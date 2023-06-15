@@ -178,6 +178,11 @@ public static class TextFileConnectorProcessor
             // {15,CHAMPS,120,1,5|65|41|17|6,7|3|55|23,6^3^12|8^2|8^1
             string[] cols = line.Split(',');
 
+            if (cols[3] == "0") 
+            {
+                continue;
+            }
+
             var tournament = new TournamentModel
             {
                 Id = int.Parse(cols[0]),
@@ -469,7 +474,7 @@ public static class TextFileConnectorProcessor
         allMatchupEntries.SaveToMatchupEntryFile();
     }
 
-    public static void UpdateMatchup(this MatchupModel matchup)
+    public static void UpdateMatchup(this MatchupModel matchup) 
     {
         var allMatchups =
             GlobalConfig.MatchupFile

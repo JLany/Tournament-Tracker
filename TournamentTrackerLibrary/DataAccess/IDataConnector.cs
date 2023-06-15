@@ -15,11 +15,11 @@ namespace TournamentTrackerLibrary.DataAccess
         List<PersonModel> GetPerson_All();
         List<TeamModel> GetTeam_All();
         List<TournamentModel> GetTournament_All();
-
         /// <summary>
         /// Update a <see cref="MatchupModel"/> in data storage, including updating its Entries.
         /// </summary>
         /// <param name="model"></param>
         void UpdateMatchup(MatchupModel model);
+        void CompleteTournament(TournamentModel model);
     }
 }

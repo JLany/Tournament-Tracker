@@ -20,6 +20,18 @@ public partial class TournamentViewerForm : Form
         roundComboBox.SelectedIndexChanged += RoundComboBox_SelectedIndexChanged;
         scoreButton.Click += ScoreButton_Click;
         unplayedOnlyCheckBox.CheckedChanged += UnplayedOnlyCheckBox_CheckedChanged;
+        this.tournament.TournamentCompleted += Tournament_TournamentCompleted;
+    }
+
+    private void Tournament_TournamentCompleted(object? sender, DateTime e)
+    {
+        MessageBox.Show(
+            "The tournament is finished!\nCongratulations to the winner!\nHard luck for the others!"
+            , "Tournament End"
+            , MessageBoxButtons.OK
+            , MessageBoxIcon.Information);
+
+        this.Close();
     }
 
     private void DrawMatchupControls()

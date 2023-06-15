@@ -177,4 +177,15 @@ public class SqlServerConnector : DataConnectorBase
             connection.Execute("dbo.spMatchupEntry_Update", param, commandType: CommandType.StoredProcedure);
         }
     }
+
+    public override void CompleteTournament(TournamentModel tournament)
+    {
+        using IDbConnection connection =
+            new System.Data.SqlClient.SqlConnection(GlobalConfig.GetConnectionString(DatabaseName));
+
+        var param = new DynamicParameters();
+        param.Add("@Id", tournament.Id);
+
+        connection.Execute("dbo.spTournament_Complete", param, commandType: CommandType.StoredProcedure);
+    }
 }

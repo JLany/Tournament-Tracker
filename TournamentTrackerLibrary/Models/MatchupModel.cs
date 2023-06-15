@@ -16,7 +16,7 @@
         {
             get
             {
-                // TODO - Could be better
+                // TODO - (OPTIONAL) Could be better
 
                 string output = "";
 

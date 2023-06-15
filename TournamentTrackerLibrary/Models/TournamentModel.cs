@@ -2,6 +2,9 @@
 {
     public class TournamentModel : IDataModel
     {
+        public const int TournamentIsFinished = 0;
+        public event EventHandler<DateTime> TournamentCompleted;
+
         public int Id { get; set; }
         public string TournamentName { get; set; }
         public decimal EntryFee { get; set; }
@@ -15,9 +18,16 @@
         {
             get
             {
-                int output = 1;
-                Rounds.ForEach(r => { if (r.Matchups.All(m => m.Winner != null)) ++output; });
-                return output;
+                int rounds = 1;
+                Rounds.ForEach(r => { if (r.Matchups.All(m => m.Winner != null)) ++rounds; });
+
+                if (rounds <= Rounds.Count)
+                    return rounds;
+                else
+                {
+                    TournamentCompleted?.Invoke(this, DateTime.Now);
+                    return TournamentIsFinished;
+                }
             }
         }
 

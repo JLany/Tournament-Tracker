@@ -9,15 +9,17 @@ public partial class CreateTournamentForm : Form, IPrizeRequester, ITeamRequeste
     private readonly List<TeamModel> availableTeams = GlobalConfig.Connector.GetTeam_All();
     private readonly List<TeamModel> selectedTeams = new();
     private readonly List<PrizeModel> selectedPrizes = new();
+    private readonly ITournamentRequester tournamentRequester;
 
-    public CreateTournamentForm()
+    public CreateTournamentForm(ITournamentRequester tournamentRequester)
     {
         InitializeComponent();
 
-        // Set up 
+        // Set up.
         WireUpLists();
+        this.tournamentRequester = tournamentRequester;
 
-        // Event handlers
+        // Event handlers.
         addTeamButton.Click += AddTeamButton_Click;
         createNewTeamLink.LinkClicked += CreateNewTeamLink_LinkClicked;
         createPrizeButton.Click += CreatePrizeButton_Click;
@@ -83,6 +85,8 @@ public partial class CreateTournamentForm : Form, IPrizeRequester, ITeamRequeste
         };
 
         GlobalConfig.Connector.CreateTournament(tournament);
+
+        tournamentRequester.ReceiveTournament(tournament);
 
         this.Close();
     }

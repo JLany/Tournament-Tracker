@@ -32,7 +32,7 @@ namespace TournamentTrackerUI
 
         private void CreateTournamentButton_Click(object? sender, EventArgs e)
         {
-            var form = new CreateTournamentForm();
+            var form = new CreateTournamentForm(this);
             form.Show();
         }
 
@@ -44,6 +44,8 @@ namespace TournamentTrackerUI
             {
                 var form = new TournamentViewerForm(tournament);
                 form.Show();
+
+                this.Close();
             }
         }
 
