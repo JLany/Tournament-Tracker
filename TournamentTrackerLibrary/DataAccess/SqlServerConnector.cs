@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using System.Data;
 using System.Reflection;
+using System.Transactions;
 using TournamentTrackerLibrary.DataAccess.SqlServerConnectorHelper;
 using TournamentTrackerLibrary.Models;
 
@@ -53,13 +54,17 @@ public class SqlServerConnector : DataConnectorBase
         using IDbConnection connection =
             new System.Data.SqlClient.SqlConnection(GlobalConfig.GetConnectionString(DatabaseName));
 
+        connection.Open();
+
         var param = new DynamicParameters();
         param.Add("@TeamName", team.TeamName);
         param.Add("@Id", null, dbType: DbType.Int32, direction: ParameterDirection.Output);
 
-        // TODO - Wrap creating a team into a transaction
 
-        connection.Execute("dbo.spTeam_Insert", param, commandType: CommandType.StoredProcedure);
+        using IDbTransaction transaction = connection.BeginTransaction();
+
+        connection.Execute("dbo.spTeam_Insert", param, commandType: CommandType.StoredProcedure
+            , transaction: transaction);
 
         team.Id = param.Get<int>("@Id");
 
@@ -69,8 +74,11 @@ public class SqlServerConnector : DataConnectorBase
             param.Add("@TeamId", team.Id);
             param.Add("@PersonId", p.Id);
 
-            connection.Execute("dbo.spTeamMember_Insert", param, commandType: CommandType.StoredProcedure);
+            connection.Execute("dbo.spTeamMember_Insert", param, commandType: CommandType.StoredProcedure
+                , transaction: transaction);
         }
+
+        transaction.Commit();
     }
 
     protected override void CreateTournamentImpl(TournamentModel tournament)
@@ -83,15 +91,16 @@ public class SqlServerConnector : DataConnectorBase
         param.Add("@EntryFee", tournament.EntryFee);
         param.Add("@Id", null, dbType: DbType.Int32, direction: ParameterDirection.Output);
 
-        // TODO - Wrap creating a tournament into a transaction
+        using (new TransactionScope(TransactionScopeOption.Required))
+        {
+            connection.Execute("dbo.spTournament_Insert", param, commandType: CommandType.StoredProcedure);
 
-        connection.Execute("dbo.spTournament_Insert", param, commandType: CommandType.StoredProcedure);
+            tournament.Id = param.Get<int>("@Id");
 
-        tournament.Id = param.Get<int>("@Id");
-
-        connection.SaveTournamentEntries(tournament);
-        connection.SaveTournamentPrizes(tournament);
-        connection.SaveTournamentRounds(tournament);
+            connection.SaveTournamentEntries(tournament);
+            connection.SaveTournamentPrizes(tournament);
+            connection.SaveTournamentRounds(tournament);
+        }
     }
 
     public override List<PersonModel> GetPerson_All()
@@ -157,11 +166,17 @@ public class SqlServerConnector : DataConnectorBase
         using IDbConnection connection =
             new System.Data.SqlClient.SqlConnection(GlobalConfig.GetConnectionString(DatabaseName));
 
+        connection.Open();
+
         var param = new DynamicParameters();
         param.Add("@Id", matchup.Id);
         param.Add("@WinnerId", matchup.Winner?.Id);
 
-        connection.Execute("dbo.spMatchup_Update", param, commandType: CommandType.StoredProcedure);
+
+        using IDbTransaction transaction = connection.BeginTransaction();
+
+        connection.Execute("dbo.spMatchup_Update", param, commandType: CommandType.StoredProcedure
+            , transaction: transaction);
 
         foreach (MatchupEntryModel entry in matchup.Entries)
         {
@@ -174,8 +189,11 @@ public class SqlServerConnector : DataConnectorBase
             param.Add("@TeamId", entry.TeamCompeting.Id);
             param.Add("@Score", entry.Score);
 
-            connection.Execute("dbo.spMatchupEntry_Update", param, commandType: CommandType.StoredProcedure);
+            connection.Execute("dbo.spMatchupEntry_Update", param, commandType: CommandType.StoredProcedure
+                , transaction: transaction);
         }
+
+        transaction.Commit();
     }
 
     public override void CompleteTournament(TournamentModel tournament)
