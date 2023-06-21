@@ -16,7 +16,10 @@ namespace TournamentTrackerUI
 
             TournamentTrackerLibrary.GlobalConfig.InitializeDataConnector(DataConnectionType.SqlServer);
 
-            Application.Run(new TournamentDashboardForm());
+
+            new TournamentDashboardForm().Show();
+
+            Application.Run();
         }
     }
 }

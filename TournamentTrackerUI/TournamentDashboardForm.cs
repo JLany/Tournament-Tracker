@@ -7,6 +7,7 @@ namespace TournamentTrackerUI
     public partial class TournamentDashboardForm : Form, ITournamentRequester
     {
         private readonly List<TournamentModel> tournaments = GlobalConfig.Connector.GetTournament_All();
+        private bool hasChild = false;
 
         public TournamentDashboardForm()
         {
@@ -18,6 +19,15 @@ namespace TournamentTrackerUI
             // Event handlers
             createTournamentButton.Click += CreateTournamentButton_Click;
             loadTournamentButton.Click += LoadTournamentButton_Click;
+            this.FormClosed += TournamentDashboardForm_FormClosed;
+        }
+
+        private void TournamentDashboardForm_FormClosed(object? sender, FormClosedEventArgs e)
+        {
+            if (!hasChild)
+            {
+                Application.Exit();
+            }
         }
 
         public void ReceiveTournament(TournamentModel tournament)
@@ -44,6 +54,8 @@ namespace TournamentTrackerUI
             {
                 var form = new TournamentViewerForm(tournament);
                 form.Show();
+
+                hasChild = true;
 
                 this.Close();
             }

@@ -32,6 +32,8 @@ public partial class TournamentViewerForm : Form
             , MessageBoxButtons.OK
             , MessageBoxIcon.Information);
 
+        new TournamentDashboardForm().Show();
+
         this.Close();
     }
 
