@@ -80,59 +80,10 @@ public partial class TournamentViewerForm : Form
         teamTwoScoreLabel.Visible = visible;
     }
 
-    private void LogScores(MatchupModel currentMatchup)
-    {
-        var teamOneScoreValue = double.Parse(teamOneScoreTextBox.Text);
-        var teamTwoScoreValue = double.Parse(teamTwoScoreTextBox.Text);
-
-        // TODO - (OPTIONAL) Try to do better
-        //if (teamOneScoreValue > teamTwoScoreValue)
-        //{
-        //    currentMatchup.Winner = currentMatchup.Entries.ElementAtOrDefault(0)?.TeamCompeting;
-        //}
-        //else if (teamTwoScoreValue > teamOneScoreValue)
-        //{
-        //    currentMatchup.Winner = currentMatchup.Entries.ElementAtOrDefault(1)?.TeamCompeting;
-        //}
-        //else
-        //{
-        //    throw new InvalidOperationException();
-        //}
-
-        double[] scores = new[] { teamOneScoreValue, teamTwoScoreValue };
-        for (int team = 0; team < currentMatchup.Entries.Count; team++)
-        {
-            currentMatchup.Entries.ElementAt(team).Score = scores[team];
-        }
-
-        //GlobalConfig.Connector.UpdateMatchup(currentMatchup);
-    }
-
     private void MatchupListBox_SelectedIndexChanged(object? sender, EventArgs e)
     {
         WireUpMatchupData();
         DrawMatchupControls();
-    }
-
-    private void QualifyWinnerToNextRound()
-    {
-        var currentMatchup = (MatchupModel)matchupListBox.SelectedItem;
-
-        tournament.Rounds.ForEach(round =>
-        {
-            foreach (var m in round.Matchups)
-            {
-                foreach (var entry in m.Entries)
-                {
-                    if (entry.ParentMatchup?.Id == currentMatchup.Id)
-                    {
-                        entry.TeamCompeting = currentMatchup.Winner;
-                        GlobalConfig.Connector.UpdateMatchup(m);
-                        return;
-                    }
-                }
-            }
-        });
     }
 
     private void RoundComboBox_SelectedIndexChanged(object? sender, EventArgs e)
@@ -150,8 +101,6 @@ public partial class TournamentViewerForm : Form
         var currentMatchup = (MatchupModel)matchupListBox.SelectedItem;
         var teamOneScoreValue = double.Parse(teamOneScoreTextBox.Text);
         var teamTwoScoreValue = double.Parse(teamTwoScoreTextBox.Text);
-
-        //LogScores(currentMatchup);
 
         if (currentMatchup == null)
         {
@@ -176,9 +125,9 @@ public partial class TournamentViewerForm : Form
         // TODO - Show appropriate error messages on labels for each case.
 
         bool teamOneScoreValid = double.TryParse(teamOneScoreTextBox.Text, out double teamOneScoreValue) 
-            && teamOneScoreValue > 0;
+            && teamOneScoreValue >= 0;
         bool teamTwoScoreValid = double.TryParse(teamTwoScoreTextBox.Text, out double teamTwoScoreValue)
-            && teamTwoScoreValue > 0;
+            && teamTwoScoreValue >= 0;
 
         if (!teamOneScoreValid)
         {
@@ -239,10 +188,11 @@ public partial class TournamentViewerForm : Form
         {
             matchupListBox.DataSource = null;
 
-            _ = (unplayedOnlyCheckBox.Checked ?
-                matchupListBox.DataSource = round.Matchups.Where(m => m.Winner == null).ToList()
-                : matchupListBox.DataSource = round.Matchups);
-
+            matchupListBox.DataSource = 
+                (unplayedOnlyCheckBox.Checked 
+                ? round.Matchups.Where(m => m.Winner == null).ToList()
+                : round.Matchups);
+                
             matchupListBox.DisplayMember = "MatchupSummary";
         }
 
