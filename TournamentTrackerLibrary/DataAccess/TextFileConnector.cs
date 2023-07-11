@@ -22,7 +22,7 @@ public class TextFileConnector : DataConnectorBase
             if (int.Parse(cols[0]) == tournament.Id)
             {
                 cols[3] = "0";
-                tournaments[i] = cols.Aggregate((line, col) => line += col);
+                tournaments[i] = string.Join(',', cols);
                 break;
             }
         }
