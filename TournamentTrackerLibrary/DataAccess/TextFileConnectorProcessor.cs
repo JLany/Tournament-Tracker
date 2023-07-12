@@ -501,26 +501,25 @@ public static class TextFileConnectorProcessor
     /// <param name="models"></param>
     /// <param name="delim"></param>
     /// <returns></returns>
-    private static string ConvertIdsToString<T>(this List<T> models, char delim) where T : class
+    private static string ConvertIdsToString(IEnumerable models, char delim)
     {
-        string output = "";
+        StringBuilder output = new StringBuilder();
 
-        if (models.Count == 0)
+        // Empty collection.
+        if (models.GetEnumerator().MoveNext() == false)
         {
             return "";
         }
 
         foreach (var model in models)
         {
-            // Very shitty piece of code, but will try
-            // TODO - (OPTIONAL) Could be better
-            if (typeof(T).Name == typeof(List<>).Name)
+            if (model is IEnumerable enumerable)
             {
-                output += $"{(model as List<MatchupModel>)?.ConvertIdsToString('^')}{delim}";
+                output.Append($"{ConvertIdsToString(enumerable, '^')}{delim}");
             }
-            else if (model is IDataModel) 
+            else if (model is IDataModel dataModel)
             {
-                output += $"{(model as IDataModel)?.Id}{delim}";
+                output.Append($"{dataModel.Id}{delim}");
             }
             else
             {
@@ -529,8 +528,10 @@ public static class TextFileConnectorProcessor
         }
 
         if (output.Length > 0)
-            output = output.Remove(output.Length - 1);
+        {
+            output = output.Remove(output.Length - 1, 1);
+        }
 
-        return output;
+        return output.ToString();
     }
 }
